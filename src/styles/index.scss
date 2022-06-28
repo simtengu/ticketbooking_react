@@ -1,0 +1,61 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding: 0px;
+  margin: 0px;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+//imports...........................................
+@import url('./_navbar.scss');
+@import url('./_footer.scss');
+//end of imports.....................................
+
+//layout configs............................
+
+.text-primary {
+    color: #158a93;
+}
+.text-secondary {
+color: #ffde07
+}
+
+.text-dark {
+  color:#1e1e1e;
+}
+
+.text-light {
+  color: white;
+}
+
+.bg-primary {
+  background-color: #158a93;
+}
+
+.bg-secondary {
+  background-color: #f0db4e;
+}
+
+.bg-light {
+  background-color: white;
+}
+
+.grd-primary {
+  background: linear-gradient(to bottom,#158a93,#75c8ce);
+}
+.grd-to-right {
+  background: linear-gradient(to right,#158a93,#75c8ce);
+}
+.grd-to-bottom-right {
+  background: linear-gradient(to bottom right,#158a93,#75c8ce);
+
+}
+//end of layout configs............................

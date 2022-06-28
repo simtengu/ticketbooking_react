@@ -1,0 +1,31 @@
+.footer {
+    background-color:#0c4a50;
+    padding: 30px 10px;
+    color: rgba(245, 245, 245, 0.671);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    
+    #body1 {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 17px;
+
+    }
+    .links {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+
+        h5 {
+font-weight:bolder;
+margin-bottom: 11px;
+        }
+        ul {
+            list-style: none;
+            text-transform: capitalize;
+            margin: 0px;
+            padding: 0px;
+            li {
+                margin-top: 10px;
+            }
+        }
+    }
+}
