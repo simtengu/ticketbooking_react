@@ -25,7 +25,7 @@ function TopBar() {
                 <Grid item sm={6}>
                   <Stack
                     className="navbarRightColumn"
-                    direction="horizontal"
+                    direction="row"
                     alignItems="center"
                     justifyContent="right"
                   >

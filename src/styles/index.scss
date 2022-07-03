@@ -17,12 +17,18 @@ code {
 //imports...........................................
 @import url('./_navbar.scss');
 @import url('./_footer.scss');
+@import url('./_journeyDetails.scss');
+@import url('./_admin.scss');
+
 //end of imports.....................................
 
 //layout configs............................
 
 .text-primary {
     color: #158a93;
+}
+.text-light-primary {
+  color: #29b7c2;
 }
 .text-secondary {
 color: #ffde07
@@ -37,15 +43,29 @@ color: #ffde07
 }
 
 .bg-primary {
-  background-color: #158a93;
+  background-color: #158a93 !important;
 }
 
 .bg-secondary {
-  background-color: #f0db4e;
+  background-color: #f0db4e !important;
+}
+.text-dark-secondary {
+  color: #ecd21c !important;
+
+}
+.bg-light-cyan {
+  background-color: #f0f0f4 !important;
 }
 
 .bg-light {
   background-color: white;
+}
+.bg-dark-primary {
+  background-color: #10666d !important;
+}
+
+.bg-light-primary {
+  background-color: #caeaec !important;
 }
 
 .grd-primary {
@@ -53,6 +73,10 @@ color: #ffde07
 }
 .grd-to-right {
   background: linear-gradient(to right,#158a93,#75c8ce);
+}
+.grd-to-bottom {
+  background: linear-gradient(to bottom,#158a93,#75c8ce);
+
 }
 .grd-to-bottom-right {
   background: linear-gradient(to bottom right,#158a93,#75c8ce);
