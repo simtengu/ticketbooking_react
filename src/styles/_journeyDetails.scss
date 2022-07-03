@@ -1,0 +1,43 @@
+.journey-details-div table, .journey-details-div th, .journey-details-div td {
+  border: 1px solid #4cadb5;
+  border-collapse: collapse;
+}
+
+.journey-details-div th, .journey-details-div td {
+  padding: 8px;
+}
+
+.bus {
+  border: 2px solid #31b0bb;
+  padding: 6px;
+  border-radius: 6px;
+
+}
+
+.bus-row .available-seat {
+    
+min-width: 47%;
+  margin-bottom: 2px;
+  background-color: #b9e8ec;
+  border: none;
+  border-radius: 4px;
+}
+
+.bus-row .taken-seat {
+    
+min-width: 47%;
+  margin-bottom: 2px;
+  background-color: #f0db4e;
+  border: none;
+  border-radius: 4px;
+  color:red;
+}
+.bus-row .yours-seat {
+    
+  min-width: 47%;
+  margin-bottom: 2px;
+  background-color: #48abb2;
+  border: none;
+  border-radius: 4px;
+  color:blueviolet;
+}
