@@ -17,6 +17,10 @@ import {
 import { Box, Divider, Grid } from "@mui/material";
 import DashboardPage from "../components/admin/Dashboard";
 import NavlinkItem from "../components/admin/NavlinkItem";
+import Reports from "./admin/Reports";
+import Routes from "./admin/Routes";
+import Tickets from "./admin/Tickets";
+import Users from "./admin/Users";
 const Admin = () => {
   return (
     <>
@@ -44,11 +48,11 @@ const Admin = () => {
                   link="/routes"
                   icon={<Directions />}
                 />
-                <NavlinkItem
+                {/* <NavlinkItem
                   title="buses"
                   link="/buses"
                   icon={<DirectionsBus />}
-                />
+                /> */}
                 <NavlinkItem title="reports" link="/reporst" icon={<Print />} />
                 <NavlinkItem
                   title="messages"
@@ -66,7 +70,7 @@ const Admin = () => {
           </Grid>
           <Grid item xs={12} md={8} lg={9}>
             <Box sx={{ p: 2 }}>
-              <DashboardPage />
+              <Routes />
             </Box>
           </Grid>
         </Grid>

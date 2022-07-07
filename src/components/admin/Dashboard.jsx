@@ -1,4 +1,5 @@
-import { Box, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { RemoveRedEye } from "@mui/icons-material";
+import { Box, Grid, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import React from "react";
 import DashboardItem from "./DashboardItem";
 const Dashboard = () => {
@@ -28,49 +29,38 @@ const Dashboard = () => {
           <DashboardItem title="income" link="/msgs" total="$10m" />
         </Grid>
 
-        <Box mt={10} ml={2}>
-          <Typography variant="h6" className="text-primary">
+        <Box sx={{ mt: 10 }}>
+          <Typography variant="h6" className="text-primary" gutterbottom>
             Today's booked tickets
           </Typography>
-        </Box>
-        <Box sx={{ mt: 2 }}>
           <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <Table sx={{ minWidth: 650 }} aria-label="today's tickets">
               <TableHead>
                 <TableRow>
-                  <TableCell>Dessert (100g serving)</TableCell>
-                  <TableCell align="left">Calories</TableCell>
-                  <TableCell align="left">Fat&nbsp;(g)</TableCell>
-                  <TableCell align="left">Carbs&nbsp;(g)</TableCell>
-                  <TableCell align="left">Protein&nbsp;(g)</TableCell>
+                  <TableCell>
+                    <span className="font-bold">Ticket Number</span>
+                  </TableCell>
+                  <TableCell align="left">
+                    <span className="font-bold">From</span>
+                  </TableCell>
+                  <TableCell align="left">
+                    <span className="font-bold">To</span>
+                  </TableCell>
+                  <TableCell align="left">
+                    <span className="font-bold">Passenger name</span>
+                  </TableCell>
+                  <TableCell align="left">&nbsp;</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                <TableRow
-                >
+                <TableRow>
                   <TableCell align="left">hello</TableCell>
                   <TableCell align="left">aos</TableCell>
                   <TableCell align="left">paul</TableCell>
                   <TableCell align="left">adfdfa</TableCell>
-                  <TableCell align="left">what now</TableCell>
+                  <TableCell align="left"> <IconButton color="primary"><RemoveRedEye /> </IconButton> </TableCell>
                 </TableRow>
-                <TableRow
-                >
-                  <TableCell align="left">hello</TableCell>
-                  <TableCell align="left">aos</TableCell>
-                  <TableCell align="left">paul</TableCell>
-                  <TableCell align="left">adfdfa</TableCell>
-                  <TableCell align="left">what now</TableCell>
-                </TableRow>
-                <TableRow
-                 
-                >
-                  <TableCell align="left">hello</TableCell>
-                  <TableCell align="left">aos</TableCell>
-                  <TableCell align="left">paul</TableCell>
-                  <TableCell align="left">adfdfa</TableCell>
-                  <TableCell align="left">what now</TableCell>
-                </TableRow>
+
               </TableBody>
             </Table>
           </TableContainer>
