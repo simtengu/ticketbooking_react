@@ -13,7 +13,6 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import DashboardItem from "../../components/admin/DashboardItem";
 import { Print } from "@mui/icons-material";
 const Reports = () => {
   return (
@@ -43,11 +42,6 @@ const Reports = () => {
             </Box>
           </Grid>
 
-          {/* <DashboardItem title="buses" link="/aos" total="13" />
-          <DashboardItem title="regions" link="/aos" total="44" />
-          <DashboardItem title="tickets" link="/aos" total="103" />
-          <DashboardItem title="messages" link="/msgs" total="103" />
-          <DashboardItem title="income" link="/msgs" total="$10m" /> */}
         </Grid>
       </Box>
     </>

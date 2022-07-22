@@ -1,10 +1,11 @@
 import { Divider, Grid } from '@mui/material';
 import React from 'react';
+import { Link } from 'react-router-dom';
 const NavlinkItem = ({title,icon,link}) => {
     return (
       <>
         <li className="">
-          <a className="admin-link" href="#">
+          <Link className="admin-link" to={`/admin${link}`}>
             <Grid container>
               <Grid item xs={2}>
                 {icon}
@@ -13,7 +14,7 @@ const NavlinkItem = ({title,icon,link}) => {
                 {title}
               </Grid>
             </Grid>
-          </a>
+          </Link>
         </li>
         <Divider />
       </>

@@ -197,9 +197,10 @@ const Routes = () => {
                   <Button
                     variant="contained"
                     size="small"
-                    sx={{ mt: 2 }}
+                    sx={{ mt: 2,fontWeight:"bold" }}
                     className="grd-to-bottom-right"
                     onClick={() => console.log(routeRounds)}
+                    fullWidth
                   >
                     Save Route
                   </Button>

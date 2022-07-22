@@ -15,11 +15,11 @@ code {
 }
 
 //imports...........................................
-@import url('./_navbar.scss');
-@import url('./_footer.scss');
-@import url('./_journeyDetails.scss');
-@import url('./_admin.scss');
-@import url('./_auth.scss');
+@import './_navbar.scss';
+@import './_footer.scss';
+@import './_journeyDetails.scss';
+@import './_admin.scss';
+@import './_auth.scss';
 
 //end of imports.....................................
 
@@ -81,6 +81,16 @@ color: #ffde07
 }
 .grd-to-bottom-right {
   background: linear-gradient(to bottom right,#158a93,#75c8ce);
+
+}
+
+.loadingSpinner {
+  background-color:rgba(141,206,211,0.3);
+  // background-color:rgba(0,0,0,0.2);
+     position: fixed;
+     top: 0px;
+     left: 0px;
+     z-index: 110;  
 
 }
 //end of layout configs............................

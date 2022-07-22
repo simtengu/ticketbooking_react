@@ -1,7 +1,7 @@
 import { RemoveRedEye } from "@mui/icons-material";
 import { Box, Grid, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import React from "react";
-import DashboardItem from "./DashboardItem";
+import DashboardItem from "../../components/admin/DashboardItem";
 const Dashboard = () => {
   return (
     <>

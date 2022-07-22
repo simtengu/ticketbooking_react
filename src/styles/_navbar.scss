@@ -1,3 +1,26 @@
 .logo {
-    text-decoration: none;
+  text-decoration: none;
 }
+
+.topbar_link_container .topbar_link {
+  text-decoration: none;
+}
+
+.topbar_link_container {
+  min-height: 36px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  .topbar_link_underline {
+    width: 0%;
+    min-height: 4px;
+    background-color: #29979f;
+    position:relative;
+    bottom: 3px;
+    transition: width 400ms ease;
+  }
+  &:hover .topbar_link_underline {
+      width: 80%;
+  }
+}
+

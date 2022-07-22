@@ -1,26 +1,16 @@
 import {
   BookOnline,
-  CardTravel,
   Dashboard,
   Directions,
-  DirectionsBus,
-  Drafts,
-  Inbox,
   Logout,
   Message,
   People,
   Print,
   Settings,
-  Train,
-  TravelExplore,
 } from "@mui/icons-material";
-import { Box, Divider, Grid } from "@mui/material";
-import DashboardPage from "../components/admin/Dashboard";
-import NavlinkItem from "../components/admin/NavlinkItem";
-import Reports from "./admin/Reports";
-import Routes from "./admin/Routes";
-import Tickets from "./admin/Tickets";
-import Users from "./admin/Users";
+import { Box, Grid } from "@mui/material";
+import NavlinkItem from "./NavlinkItem";
+import { Outlet } from "react-router-dom";
 const Admin = () => {
   return (
     <>
@@ -48,20 +38,15 @@ const Admin = () => {
                   link="/routes"
                   icon={<Directions />}
                 />
-                {/* <NavlinkItem
-                  title="buses"
-                  link="/buses"
-                  icon={<DirectionsBus />}
-                /> */}
-                <NavlinkItem title="reports" link="/reporst" icon={<Print />} />
+                <NavlinkItem title="reports" link="/reports" icon={<Print />} />
                 <NavlinkItem
                   title="messages"
-                  link="/messages"
+                  link="/admin_messages"
                   icon={<Message />}
                 />
                 <NavlinkItem
                   title="settings"
-                  link="/settings"
+                  link="#"
                   icon={<Settings />}
                 />
                 <NavlinkItem title="logout" link="/logout" icon={<Logout />} />
@@ -70,7 +55,7 @@ const Admin = () => {
           </Grid>
           <Grid item xs={12} md={8} lg={9}>
             <Box sx={{ p: 2 }}>
-              <Routes />
+              <Outlet />
             </Box>
           </Grid>
         </Grid>

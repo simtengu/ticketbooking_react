@@ -1,3 +1,4 @@
+import { Forward } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -24,12 +25,12 @@ const Hero = () => {
   ];
   return (
     <>
-      <Container sx={{ mt: 10,pb:4 }}>
+      <Container sx={{ pt:10,pb:15 }}>
         <Grid container justifyContent="center">
           <Grid item xs={11} md={8}>
             <Box mx={3}>
               <center>
-                <Typography variant="h5" className="text-light">
+                <Typography variant="h5" sx={{fontWeight:"bold"}} className="text-light">
                   We provide the best transport services in Tanzania.
                 </Typography>
                 <Typography variant="body2" className="text-light" gutterBottom>
@@ -81,9 +82,8 @@ const Hero = () => {
                             </MenuItem>
                           ))}
                         </TextField>
-                        <Typography variant="body1" className="text-primary">
-                          ....To....
-                        </Typography>
+                        <Forward className="text-primary" />
+                
                         <TextField
                           select
                           label="To"

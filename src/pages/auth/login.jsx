@@ -17,12 +17,18 @@ import {
   Typography,
 } from "@mui/material";
 import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Row from "../../components/utils/Row";
 const Login = () => {
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const path = location.state.from.pathname;
+
   return (
     <>
-      <Box py={4} className="bg-primary" sx={{ minHeight: "100vh" }}>
-        <Grid container justifyContent="center">
+      <Box py={4} className="bg-primary" >
+        <Grid container justifyContent="center" alignItems="center" sx={{ minHeight: "75vh" }}>
           <Grid item xs={12} md={4} sx={{ p: { xs: 2, md: 0 } }}>
             <Paper sx={{ p: 2, borderRadius: 4 }}>
               <Typography
