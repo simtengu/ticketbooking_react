@@ -1,23 +1,70 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { publicApi } from "../../api";
 import { activateFeedback, activateLoading, deActivateLoading } from "./errorAndFeedback";
+
+export const loginAttempt = createAsyncThunk("auth/signin", async (userInfo, thunkApi) => {
+    try {
+        thunkApi.dispatch(activateLoading())
+        const rs = await publicApi.post("/user/login", userInfo)
+        thunkApi.dispatch(deActivateLoading())
+        return rs.data
+    } catch (error) {
+        const error_message = error.response ? error.response.data.message : error.message;
+        thunkApi.dispatch(activateFeedback({ status: "error", message: error_message }))
+        thunkApi.dispatch(deActivateLoading())
+        return thunkApi.rejectWithValue(error_message)
+
+    }
+
+})
+
+export const logoutAttempt = createAsyncThunk("auth/signout", async (user,thunkApi)=>{
+
+    try {
+        const rs = await publicApi.get("/logout")
+        return rs.data
+    } catch (error) {
+    
+        return thunkApi.rejectWithValue("user logged out")
+
+    } 
+})
 
 const initialState = {
     user: {}
 }
 const authUserSlice = createSlice({
-    name: "authUser",
+    name: "auth",
     initialState,
     reducers: {
         setAuthUser: (state, action) => {
             state.user = action.payload
         }
+    },
+    extraReducers: (builder) => {
+        builder.addCase(loginAttempt.fulfilled, (state, action) => {
+            state.user = action.payload.user
+        })
+        builder.addCase(loginAttempt.rejected, (state, action) => {
+            console.log("rejected action", action.payload)
+        })
+        builder.addCase(logoutAttempt.pending,(state)=>{
+            state.user = {}
+        })
+        builder.addCase(logoutAttempt.fulfilled, (state) => {
+            state.user = {}
+        })
+        builder.addCase(logoutAttempt.rejected, (state) => {
+            state.user = {}
+        })
     }
 })
 
 
 export const { setAuthUser } = authUserSlice.actions;
 
+
+//registering new user
 export const registerNewUser = (userInfo) => async (dispatch, getState) => {
 
     let user_data = Object.entries(userInfo).filter(item => item[0] !== "confirm_password")
@@ -29,7 +76,7 @@ export const registerNewUser = (userInfo) => async (dispatch, getState) => {
         const rs = await publicApi.post("/user/register", user_data);
         const userData = rs.data;
         if (rs.status === 201) {
-            dispatch(setAuthUser(userData))
+            dispatch(setAuthUser(userData.user))
             dispatch(activateFeedback({ status: "success", message: "Congratulations you have been successfully registered" }))
         }
         dispatch(deActivateLoading())
@@ -41,6 +88,23 @@ export const registerNewUser = (userInfo) => async (dispatch, getState) => {
     }
 
 
+}
+
+
+//fetching auth user...............
+export const fetchAuthUser = () => async (dispatch, getState) => {
+    try {
+        dispatch(activateLoading())
+        const rs = await publicApi.get("/getAuthUser");
+        const userData = rs.data;
+        if (rs.status === 200) {
+            dispatch(setAuthUser(userData.user))
+        }
+        dispatch(deActivateLoading())
+
+    } catch (error) {
+        dispatch(deActivateLoading())
+    }
 }
 
 export default authUserSlice.reducer;

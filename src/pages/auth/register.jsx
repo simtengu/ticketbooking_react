@@ -1,4 +1,4 @@
-import React, { useReducer, useRef, useState } from "react";
+import React, { useEffect, useReducer, useRef, useState } from "react";
 import { Lock } from "@mui/icons-material";
 import {
   Box,
@@ -22,9 +22,11 @@ import FeedbackMessage from "../../components/utils/FeedbackMessage";
 import LoadingSpinner from "../../components/utils/LoadingSpinner";
 import { useDispatch, useSelector } from "react-redux";
 import { registerNewUser } from "../../store/features/auth";
+import { useNavigate } from "react-router-dom";
 const Register = () => {
+   const navigate = useNavigate();
  const redux_dispatch = useDispatch();
- const { isLoading } = useSelector((state) => state.feedback);
+ const { feedback:{isLoading},auth:{user} } = useSelector((state) => state);
 
   let initialUserData = {
     firstName: "",
@@ -130,6 +132,12 @@ const Register = () => {
       redux_dispatch(registerNewUser(userInfo))
     }
   };
+
+    useEffect(() => {
+      if (user.email) {
+        navigate("/", { replace: true });
+      }
+    }, [user]);
 
   return (
     <>

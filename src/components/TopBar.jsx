@@ -1,10 +1,13 @@
+import React from "react";
 import { Logout, Person } from "@mui/icons-material";
 import { Avatar, Box, Button, Container, Grid, IconButton, Stack, Tooltip, Typography } from "@mui/material";
-import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import useAuth from "../hookes/useAuth";
+import { logoutAttempt } from "../store/features/auth";
 
 function TopBar() {
+  const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -74,7 +77,7 @@ function TopBar() {
                       </center>
                     </Box>
 
-                    {authUser ? (
+                    {authUser.email ? (
                       <Stack direction="row">
                         <Tooltip
                           sx={{ mx: 1 }}
@@ -82,7 +85,7 @@ function TopBar() {
                           placement="top"
                           arrow
                         >
-                          <IconButton>
+                          <IconButton onClick={()=>{dispatch(logoutAttempt());navigate("/")}}>
                             <Logout sx={{ color: "#29979f" }} />
                           </IconButton>
                         </Tooltip>
@@ -91,7 +94,7 @@ function TopBar() {
                           sx={{ mx: 1 }}
                           title="account"
                           placement="top"
-                          onClick={() => alert("tooltip just clicked")}
+                          onClick={() => navigate("/admin/dashboard")}
                           arrow
                         >
                           <Avatar
