@@ -8,7 +8,8 @@ const initialState = {
         status: "",
         message: "",
     },
-    isLoading: false
+    isLoading: false,
+    isModalOpen:false
 };
 const feedBackSlice = createSlice({
     name: "feedback",
@@ -26,11 +27,17 @@ const feedBackSlice = createSlice({
         },
         deActivateLoading: (state)=>{
             state.isLoading = false
+        },
+        openModal: (state)=>{
+            state.isModalOpen = true
+        },
+        closeModal: (state)=>{
+            state.isModalOpen = false
         }
     }
 
 })
 
-export const{activateFeedback,deActivateFeedback,activateLoading,deActivateLoading} = feedBackSlice.actions;
+export const{openModal,closeModal, activateFeedback,deActivateFeedback,activateLoading,deActivateLoading} = feedBackSlice.actions;
 
 export default feedBackSlice.reducer

@@ -243,7 +243,7 @@ code {
   background: linear-gradient(to bottom right, #158a93, #75c8ce);
 }
 
-.loadingSpinner {
+.loadingSpinner, .modalContainer {
   background-color: rgba(141, 206, 211, 0.3);
   position: fixed;
   top: 0px;

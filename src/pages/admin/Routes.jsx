@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -29,47 +29,80 @@ import {
 } from "@mui/material";
 import { Add, Edit } from "@mui/icons-material";
 import Row from "../../components/utils/Row";
+import { fetchRegions, registerRegion } from "../../store/features/profile";
+import { useDispatch, useSelector } from "react-redux";
+import LoadingSpinner from "../../components/utils/LoadingSpinner";
+import spinner from "../../assets/spinner.gif";
+
 const Routes = () => {
+  const dispatch = useDispatch();
+  const {
+    feedback: { isLoading },
+    profile: { regions },
+  } = useSelector((state) => state);
   const [isFirstRoundChecked, setFirstRound] = useState(false);
   const [isSecondRoundChecked, setSecondRound] = useState(false);
   const [routeRounds, setRouteRounds] = useState([]);
+  const [newRegion, setNewRegion] = useState("");
+  const [isAddingRegion, setIsAddingRegion] = useState(false);
+
+  const handleSubmitRegion = async () => {
+    if (newRegion) {
+      setIsAddingRegion(true);
+      await dispatch(registerRegion(newRegion.trim()));
+      setIsAddingRegion(false);
+      setNewRegion("");
+    }
+  };
 
   const handleRoundsChange = (e) => {
     const name = e.target.name;
     if (name === "first round") {
-      console.log("its first round")
+      console.log("its first round");
       if (isFirstRoundChecked) {
-        console.log("unchecked")
-        //1st round unchecked...removing it from the list of availble rounds.... 
-        let newList = routeRounds.filter(round=>round.title !== name);
+        console.log("unchecked");
+        //1st round unchecked...removing it from the list of availble rounds....
+        let newList = routeRounds.filter((round) => round.title !== name);
 
-        setRouteRounds(newList)
+        setRouteRounds(newList);
       } else {
-        console.log("checked ")
-        setRouteRounds([...routeRounds,{title:"first round",time:"06:00am"}])
-      
+        console.log("checked ");
+        setRouteRounds([
+          ...routeRounds,
+          { title: "first round", time: "06:00am" },
+        ]);
       }
 
       setFirstRound(!isFirstRoundChecked);
-
     } else {
-      console.log("its second round")
+      console.log("its second round");
       if (isSecondRoundChecked) {
         console.log("unchecked");
         //2nd round unchecked...removing it from the list of availble rounds....
         let newList = routeRounds.filter((round) => round.title !== name);
         setRouteRounds(newList);
       } else {
-        console.log("checked")
-         setRouteRounds([
-           ...routeRounds,
-           { title: "second round", time: "08:00am" },
-         ]);
+        console.log("checked");
+        setRouteRounds([
+          ...routeRounds,
+          { title: "second round", time: "08:00am" },
+        ]);
       }
       setSecondRound(!isSecondRoundChecked);
     }
-
   };
+
+  useEffect(() => {
+    const getRegions = async () => {
+      await dispatch(fetchRegions());
+    };
+
+    getRegions();
+  }, []);
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <>
@@ -82,26 +115,81 @@ const Routes = () => {
           <Grid item xs={12} md={5}>
             <Box sx={{ p: { xs: 2, md: 4 } }}>
               <Paper sx={{ p: 2, borderRadius: 4 }}>
-                <Box
-                  className="bg-light-cyan"
-                  sx={{
-                    p: 0.7,
-                    borderRadius: 4,
-                    display: "inline-block",
-                    mb: 1,
-                  }}
-                >
-                  <Row>
-                    <InputBase placeholder="Add region.." />
-                    <IconButton>
-                      <Add
-                        sx={{ borderRadius: "100%", p: 0.2 }}
-                        className="bg-primary text-light"
+                <Box mx={1}>
+                  <Box
+                    className="bg-light-cyan"
+                    sx={{
+                      p: 0.7,
+                      borderRadius: 4,
+                      display: "inline-block",
+                      mb: 1,
+                    }}
+                  >
+                    <Row>
+                      <InputBase
+                        value={newRegion}
+                        onChange={(e) => setNewRegion(e.target.value)}
+                        placeholder="Add region.."
                       />
-                    </IconButton>
-                  </Row>
+
+                      {isAddingRegion ? (
+                        <img src={spinner} width="40" />
+                      ) : (
+                        <IconButton onClick={handleSubmitRegion}>
+                          <Add
+                            sx={{ borderRadius: "100%", p: 0.2 }}
+                            className="bg-primary text-light"
+                          />
+                        </IconButton>
+                      )}
+                    </Row>
+                  </Box>
+                  {regions && regions.length > 0 ? (
+                    <div>
+                      <Typography
+                        variant="button"
+                        className="text-primary"
+                        sx={{ fontWeight: "bold", display: "block" }}
+                        gutterBottom
+                      >
+                        Registered regions
+                      </Typography>
+                      <Box sx={{ display: "flex", flexWrap: "wrap", pt: 1 }}>
+                        {regions.map((region, index) => (
+                          <Button
+                            key={index}
+                            sx={{
+                              mr: 0.2,
+                              mt:0.2,
+                              color: "#808080",
+                              borderColor: "#808080",
+                            }}
+                            size="small"
+                            variant="outlined"
+                          >
+                            {region}
+                          </Button>
+                        ))}
+                      </Box>
+                        <div style={{display:"block"}}>  
+
+                        <Typography className="text-primary" variant="caption">
+                          click a region for more actions
+                        </Typography>
+                        </div>
+                    </div>
+                  ) : (
+                    <Typography
+                      variant="caption"
+                      className="text-dark"
+                      sx={{ fontWeight: "bold", display: "block" }}
+                      gutterBottom
+                    >
+                      No regions registered yet.
+                    </Typography>
+                  )}
                 </Box>
-                <Divider sx={{ mt: 2 }} />
+                <Divider sx={{ mt: 0.8 }} />
                 <Box mt={2} mx={1}>
                   <Typography
                     variant="button"
@@ -197,7 +285,7 @@ const Routes = () => {
                   <Button
                     variant="contained"
                     size="small"
-                    sx={{ mt: 2,fontWeight:"bold" }}
+                    sx={{ mt: 2, fontWeight: "bold" }}
                     className="grd-to-bottom-right"
                     onClick={() => console.log(routeRounds)}
                     fullWidth

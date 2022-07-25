@@ -145,7 +145,7 @@ const Register = () => {
       <FeedbackMessage />
 
       {/* loading spinner................... */}
-     {isLoading && <LoadingSpinner />} 
+      {isLoading && <LoadingSpinner />}
       <Box py={4} className="grd-to-bottom" sx={{ minHeight: "80vh" }}>
         <Grid container justifyContent="center">
           <Grid item xs={12} md={4} lg={5} sx={{ p: { xs: 2, md: 0 } }}>
@@ -401,8 +401,9 @@ const Register = () => {
                   register
                 </Button>
                 <Button
-                  sx={{ mt: 1, color: "#868686", fontSize: 13 }}
+                  sx={{ mt: 1, color: "#797979",fontWeight:"bold", fontSize: 13 }}
                   variant="text"
+                  onClick={()=>navigate("/login")}
                 >
                   go to login
                 </Button>

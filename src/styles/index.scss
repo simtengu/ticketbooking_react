@@ -84,13 +84,13 @@ color: #ffde07
 
 }
 
-.loadingSpinner {
+.loadingSpinner,.modalContainer {
   background-color:rgba(141,206,211,0.3);
   // background-color:rgba(0,0,0,0.2);
      position: fixed;
      top: 0px;
      left: 0px;
-     z-index: 110;  
+     z-index: 110;
 
 }
 //end of layout configs............................

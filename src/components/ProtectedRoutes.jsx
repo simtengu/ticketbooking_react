@@ -9,6 +9,7 @@ import { setAuthUser } from "../store/features/auth";
 import LoadingSpinner from "./utils/LoadingSpinner";
 
 const ProtectedRoutes = () => {
+  const location = useLocation()
   const dispatch = useDispatch();
   const authUser = useAuth();
   const [loading, setLoading] = useState(authUser.email ? false : true);
@@ -36,7 +37,7 @@ const ProtectedRoutes = () => {
   if (loading) {
     return <Box sx={{minHeight:"100vh"}}><LoadingSpinner /></Box> ;
   } else {
-    return authUser.email ? <Outlet /> : <Navigate to="/login" />;
+    return authUser.email ? <Outlet /> : <Navigate to="/login" state={{from:location.pathname}} />;
   }
 };
 

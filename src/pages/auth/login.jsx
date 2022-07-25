@@ -25,17 +25,22 @@ import Row from "../../components/utils/Row";
 import { loginAttempt } from "../../store/features/auth";
 import { activateFeedback } from "../../store/features/errorAndFeedback";
 const Login = () => {
-  const { feedback:{isLoading},auth:{user} } = useSelector((state) => state);
+  const {
+    feedback: { isLoading },
+    auth: { user },
+  } = useSelector((state) => state);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   let path;
-  if(location?.state?.from){
-    path = location.state.from.pathname
-  }else{
-    path = "/"
-  }
+  console.log("location", location.state.from);
+  path = location.state.from;
+  // if(location?.state?.from){
+  //   path = location.state.from.pathname
+  // }else{
+  //   path = "/"
+  // }
   const [userInfo, setUserInfo] = useState({ email: "", password: "" });
 
   const handleLogin = (e) => {
@@ -47,17 +52,15 @@ const Login = () => {
           status: "warning",
         })
       );
-    }else {
-      dispatch(loginAttempt(userInfo))
+    } else {
+      dispatch(loginAttempt(userInfo));
     }
-  
   };
 
   useEffect(() => {
-    if(user.email){
-    navigate(path,{replace:true})
+    if (user.email) {
+      navigate("/admin/tickets", { replace: true });
     }
-
   }, [user]);
 
   return (
@@ -138,13 +141,24 @@ const Login = () => {
                 <Box>
                   <Row>
                     <Button
-                      sx={{ mt: 1, color: "#868686", fontSize: 13 }}
+                      sx={{
+                        mt: 1,
+                        color: "#797979",
+                        fontWeight: "bold",
+                        fontSize: 13,
+                      }}
                       variant="text"
+                      onClick={() => navigate("/register")}
                     >
                       go to register
                     </Button>
                     <Button
-                      sx={{ mt: 1, color: "#868686", fontSize: 13 }}
+                      sx={{
+                        mt: 1,
+                        color: "#797979",
+                        fontWeight: "bold",
+                        fontSize: 13,
+                      }}
                       variant="text"
                     >
                       forgot password ?
