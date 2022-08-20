@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import React, { useEffect,useState } from "react";
+import React, { useEffect, useState } from "react";
 import Footer from "./components/Footer";
 import TopBar from "./components/TopBar";
 import Admin from "./components/admin/Admin";
@@ -22,53 +22,60 @@ import { useDispatch } from "react-redux";
 import { publicApi } from "./api";
 import { setAuthUser } from "./store/features/auth";
 import LoadingSpinner from "./components/utils/LoadingSpinner";
+import MakePayment from "./pages/MakePayment";
+import DownloadTicket from "./pages/DownloadTicket";
 
 function App() {
-    const dispatch = useDispatch();
-    const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-      const fetch_user = async () => {
-        try {
-          const rs = await publicApi.get("/getAuthUser");
-          const userData = rs.data;
-          if (rs.status === 200) {
-            dispatch(setAuthUser(userData.user));
-          }
-
-          setLoading(false);
-        } catch (error) {
-          setLoading(false);
+  useEffect(() => {
+    const fetch_user = async () => {
+      try {
+        const rs = await publicApi.get("/getAuthUser");
+        const userData = rs.data;
+        if (rs.status === 200) {
+          dispatch(setAuthUser(userData.user));
         }
-      };
 
-      if (loading) {
-        fetch_user();
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
       }
-    }, []);
+    };
 
     if (loading) {
-      return (
-        <Box sx={{ minHeight: "100vh" }}>
-          <LoadingSpinner />
-        </Box>
-      );
+      fetch_user();
     }
-    
+  }, []);
+
+  if (loading) {
+    return (
+      <Box sx={{ minHeight: "100vh" }}>
+        <LoadingSpinner />
+      </Box>
+    );
+  }
+
   return (
     <>
-      <Box sx={{ bgcolor: "#158a93m" }} className="homeDiv">
+      <Box sx={{ bgcolor: "#158a93" }} className="homeDiv">
         <TopBar />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contacts" element={<ContactUs />} />
-          <Route path="/journey" element={<JourneyDetails />} />
+          <Route
+            path="/journey/:fromRegion/:toRegion"
+            element={<JourneyDetails />}
+          />
           <Route element={<AuthRoutes />}>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
           </Route>
           <Route element={<ProtectedRoutes />}>
+            <Route path="/tickets/payment" element={<MakePayment />} />
+            <Route path="/tickets/download" element={<DownloadTicket />} />
             <Route path="/admin" element={<Admin />}>
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="reports" element={<Reports />} />

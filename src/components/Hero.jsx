@@ -10,27 +10,83 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { publicApi } from "../api";
+import { activateLoading, deActivateLoading } from "../store/features/errorAndFeedback";
+import { fetchRegions, setRegions } from "../store/features/profile";
+import LoadingSpinner from "./utils/LoadingSpinner";
 const Hero = () => {
-  let regions = [
-    "tabora",
-    "Iringa",
-    "Katavi",
-    "Dar es salaam",
-    "Arusha",
-    "Dodoma",
-    "Mbeya",
-    "Mwanza",
-    "Tanga",
-  ];
+ const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [regions,setTheRegions] = useState([])
+  const [fromR, setFromR] = useState("");
+  const [toR, setToR] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  const handleSetFrom = (frm) => {
+    let newRegionsList = regions.filter((rgn) => rgn !== frm);
+    let toRgn = newRegionsList[0];
+    setFromR(frm);
+    setToR(toRgn);
+  };
+
+  const handleSubmitRoute = ()=>{
+  if(fromR&&toR) navigate(`/journey/${fromR}/${toR}`)
+  }
+  useEffect(() => {
+    const getRegions = async ()=>{
+      try {
+        setIsLoading(true)
+        const rs = await publicApi.get("/regions");
+        const rsData = rs.data;
+        let regions = rsData.regions.map((region) => region.name);
+        if (rs.status === 200) {
+          dispatch(setRegions(regions));//for other components(globally accessed)...
+          setTheRegions(regions) //for this component..........
+          setFromR(regions[0]);
+          setToR(regions[1]);
+        }
+        setIsLoading(false)
+      } catch (error) {
+        
+        console.log("something went wrong");
+        setIsLoading(false)
+      }
+
+    }
+    getRegions();
+   
+  }, []);
+
+  // useEffect(() => {
+  //   console.log("setting from and to");
+  //   setFromR(regions[0]);
+  //   setToR(regions[1]);
+  // }, [regions]);
+
+  if (isLoading) {
+    return (
+      <Box sx={{ minHeight: "80vh" }}>
+        <LoadingSpinner />
+      </Box>
+    );
+  }
+
   return (
     <>
-      <Container sx={{ pt:10,pb:15 }}>
+      <Container sx={{ pt: 10, pb: 15 }}>
         <Grid container justifyContent="center">
           <Grid item xs={11} md={8}>
             <Box mx={3}>
               <center>
-                <Typography variant="h5" sx={{fontWeight:"bold"}} className="text-light">
+                <Typography
+                  variant="h5"
+                  sx={{ fontWeight: "bold" }}
+                  className="text-light"
+                >
                   We provide the best transport services in Tanzania.
                 </Typography>
                 <Typography variant="body2" className="text-light" gutterBottom>
@@ -54,7 +110,7 @@ const Hero = () => {
                     className="text-primary"
                     variant="button"
                     sx={{ fontWeight: "bold" }}
-                    gutterbuttom
+                    gutterBottom
                   >
                     Tell us about your journey
                   </Typography>{" "}
@@ -62,44 +118,54 @@ const Hero = () => {
                 <Box sx={{ mt: 2 }}>
                   <Grid container>
                     <Grid item xs={12} md={6}>
-                      <Stack
-                        direction="horizontal"
-                        alignItems="center"
-                        justifyContent="space-between"
-                      >
-                        <TextField
-                          select
-                          label="From"
-                          size="small"
-                          margin="normal"
-                          name="From"
-                          value="Arusha"
-                          onChange={() => {}}
+                      {regions && regions.length > 0 ? (
+                        <Stack
+                          direction="row"
+                          alignItems="center"
+                          justifyContent="space-between"
                         >
-                          {regions.map((option, index) => (
-                            <MenuItem key={index} value={option}>
-                              {option}
-                            </MenuItem>
-                          ))}
-                        </TextField>
-                        <Forward className="text-primary" />
-                
-                        <TextField
-                          select
-                          label="To"
-                          size="small"
-                          margin="normal"
-                          name="From"
-                          value="Arusha"
-                          onChange={() => {}}
-                        >
-                          {regions.map((option, index) => (
-                            <MenuItem key={index} value={option}>
-                              {option}
-                            </MenuItem>
-                          ))}
-                        </TextField>
-                      </Stack>
+                          <TextField
+                            select
+                            label="From"
+                            size="small"
+                            margin="normal"
+                            name="From"
+                            value={fromR}
+                            onChange={(e) => handleSetFrom(e.target.value)}
+                          >
+                            {regions &&
+                              regions.map((option, index) => (
+                                <MenuItem key={index} value={option}>
+                                  {option}
+                                </MenuItem>
+                              ))}
+                          </TextField>
+                          <Forward className="text-primary" />
+
+                          <TextField
+                            select
+                            label="To"
+                            size="small"
+                            margin="normal"
+                            name="From"
+                            value={toR}
+                            onChange={(e) => {
+                              setToR(e.target.value);
+                            }}
+                          >
+                            {regions &&
+                              regions
+                                .filter((region) => region !== fromR)
+                                .map((option, index) => (
+                                  <MenuItem key={index} value={option}>
+                                    {option}
+                                  </MenuItem>
+                                ))}
+                          </TextField>
+                        </Stack>
+                      ) : (
+                        ""
+                      )}
                     </Grid>
                     <Grid item xs={12} md={6} alignSelf="center">
                       <center>
@@ -108,6 +174,7 @@ const Hero = () => {
                           size="small"
                           sx={{ mx: 1 }}
                           className="grd-to-bottom-right"
+                          onClick={handleSubmitRoute}
                         >
                           submit
                         </Button>
@@ -117,11 +184,10 @@ const Hero = () => {
                 </Box>
               </Paper>
               <center>
-                  <Typography mt={1} variant="body1" className="text-secondary">
-                Fill and submit this form to get your ticket now.
-              </Typography>   
+                <Typography mt={1} variant="body1" className="text-secondary">
+                  Fill and submit this form to get your ticket now.
+                </Typography>
               </center>
-           
             </Box>
           </Grid>
         </Grid>

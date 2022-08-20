@@ -1,6 +1,5 @@
 import { Box } from '@mui/material';
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import Hero from '../components/Hero';
 const Home = () => {
     return (

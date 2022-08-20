@@ -19,7 +19,7 @@ import { Delete } from "@mui/icons-material";
 const UserDetails = ({user}) => {
     return (
       <>
-        <Paper elevation={6} sx={{ p: 2, borderRadius: 2 }}>
+        <Paper elevation={10} sx={{ p: 2, borderRadius: 2 }}>
           <center>
        
               <Typography

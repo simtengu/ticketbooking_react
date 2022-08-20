@@ -27,24 +27,123 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Add, Edit } from "@mui/icons-material";
+import { Add, Delete, Edit } from "@mui/icons-material";
 import Row from "../../components/utils/Row";
-import { fetchRegions, registerRegion } from "../../store/features/profile";
+import {
+  deleteRegion,
+  editRegion,
+  fetchRegionRoutes,
+  fetchRegions,
+  fetchRoutes,
+  registerRegion,
+  registerRoute,
+} from "../../store/features/profile";
+import {
+  activateFeedback,
+  closeModal,
+  deActivateFeedback,
+  openModal,
+} from "../../store/features/errorAndFeedback";
 import { useDispatch, useSelector } from "react-redux";
+import Modal from "../../components/utils/Modal";
 import LoadingSpinner from "../../components/utils/LoadingSpinner";
 import spinner from "../../assets/spinner.gif";
+import FeedbackMessage from "../../components/utils/FeedbackMessage";
+import { useReducer } from "react";
+import UpdateRouteForm from "../../components/admin/UpdateRoute";
 
 const Routes = () => {
   const dispatch = useDispatch();
   const {
-    feedback: { isLoading },
-    profile: { regions },
+    feedback: { isLoading, isModalOpen },
+    profile: { regions, routes },
   } = useSelector((state) => state);
   const [isFirstRoundChecked, setFirstRound] = useState(false);
   const [isSecondRoundChecked, setSecondRound] = useState(false);
-  const [routeRounds, setRouteRounds] = useState([]);
+
   const [newRegion, setNewRegion] = useState("");
+  const [prevRegion, setPrevRegion] = useState("");
+  const [selectedRegion, setSelectedRegion] = useState("");
   const [isAddingRegion, setIsAddingRegion] = useState(false);
+  const [isUpdatingRegion, setIsUpdatingRegion] = useState({
+    status: false,
+    message: "",
+  });
+
+  const [selectedRoute, setSelectedRoute] = useState({});
+  const [modalContent, setModalContent] = useState("updateRegion");
+
+  //routes fetching..........................................................
+  const [routeCategory, setRouteCategory] = useState("all");
+  const [isFetchingRoutes, setIsFetchingRoute] = useState(false);
+  const handleRoutesFetching = async (from) => {
+    setIsFetchingRoute(true);
+    if (from === "all") {
+      await dispatch(fetchRoutes());
+    } else {
+      await dispatch(fetchRegionRoutes(from));
+    }
+    setRouteCategory(from);
+    setIsFetchingRoute(false);
+  };
+  //end of routes fetching..........................................................
+  //journey state implementation...............................
+  const [toRegions, setToRegions] = useState(regions);
+  const initialJourneyInfo = {
+    from: regions.length > 0 ? regions[0] : "arusha",
+    to: regions.length >= 2 ? regions[1] : "no enough regions",
+    routeMap: "",
+    price: "",
+    distance: "",
+    perDayRounds: [],
+  };
+  const journeyReducer = (state, action) => {
+    switch (action.type) {
+      case "setFrom":
+        return { ...state, from: action.payload };
+      case "setTo":
+        return { ...state, to: action.payload };
+      case "setPrice":
+        return { ...state, price: action.payload };
+      case "setMap":
+        return { ...state, routeMap: action.payload };
+      case "setDistance":
+        return { ...state, distance: action.payload };
+      case "addRound":
+        const newRound = action.payload;
+        return { ...state, perDayRounds: [...state.perDayRounds, newRound] };
+      case "removeRound":
+        const newRoundsList = state.perDayRounds.filter(
+          (round) => round.title !== action.payload
+        );
+        return { ...state, perDayRounds: newRoundsList };
+      case "setBusType":
+        let rounds = state.perDayRounds;
+        let targetedRound = rounds.find(
+          (round) => round.title === action.payload.title
+        );
+        let targetedRoundIndex = rounds.findIndex(
+          (round) => round.title === action.payload.title
+        );
+        rounds[targetedRoundIndex] = {
+          ...targetedRound,
+          busType: action.payload.busType,
+        };
+        return { ...state, perDayRounds: rounds };
+
+      case "resetRoute":
+        return initialJourneyInfo;
+      default:
+        return state;
+    }
+  };
+
+  const [journeyInfo, jDispatch] = useReducer(
+    journeyReducer,
+    initialJourneyInfo
+  );
+
+  //end of journey state implementation........................
 
   const handleSubmitRegion = async () => {
     if (newRegion) {
@@ -55,50 +154,145 @@ const Routes = () => {
     }
   };
 
+  //rounds per day state management........................................
   const handleRoundsChange = (e) => {
     const name = e.target.name;
-    if (name === "first round") {
-      console.log("its first round");
+    if (name === "1st round") {
       if (isFirstRoundChecked) {
-        console.log("unchecked");
         //1st round unchecked...removing it from the list of availble rounds....
-        let newList = routeRounds.filter((round) => round.title !== name);
-
-        setRouteRounds(newList);
+        jDispatch({ type: "removeRound", payload: name });
       } else {
-        console.log("checked ");
-        setRouteRounds([
-          ...routeRounds,
-          { title: "first round", time: "06:00am" },
-        ]);
+        jDispatch({
+          type: "addRound",
+          payload: { title: name, time: "06:00am", busType: "2 By 3" },
+        });
       }
-
       setFirstRound(!isFirstRoundChecked);
     } else {
-      console.log("its second round");
       if (isSecondRoundChecked) {
-        console.log("unchecked");
         //2nd round unchecked...removing it from the list of availble rounds....
-        let newList = routeRounds.filter((round) => round.title !== name);
-        setRouteRounds(newList);
+        jDispatch({ type: "removeRound", payload: name });
       } else {
-        console.log("checked");
-        setRouteRounds([
-          ...routeRounds,
-          { title: "second round", time: "08:00am" },
-        ]);
+        jDispatch({
+          type: "addRound",
+          payload: { title: name, time: "08:00am", busType: "2 By 3" },
+        });
       }
       setSecondRound(!isSecondRoundChecked);
     }
   };
 
+  const handleOpenModal = (rgn) => {
+    setModalContent("updateRegion");
+    setSelectedRegion(rgn);
+    setPrevRegion(rgn);
+    dispatch(openModal());
+  };
+
+  //update the region............
+  const handleUpdatedRegion = async () => {
+    if (!selectedRegion) return;
+    setIsUpdatingRegion({ status: true, message: "Updating region....." });
+    await dispatch(editRegion({ prevRegion, updatedRegion: selectedRegion }));
+    setIsUpdatingRegion({ status: false, message: "" });
+    setPrevRegion(selectedRegion);
+  };
+
+  //delete the region............
+  const handleDeleteRegion = async () => {
+    if (!selectedRegion) return;
+    setIsUpdatingRegion({ status: true, message: "Deleting region......." });
+    await dispatch(deleteRegion(selectedRegion));
+    setIsUpdatingRegion({ status: false, message: "" });
+    dispatch(closeModal());
+  };
+
+  //update route destinations......
+  const changeFromTo = (fromRegion) => {
+    jDispatch({ type: "setFrom", payload: fromRegion });
+    if (regions.length > 1) {
+      let newList = regions.filter((region) => region !== fromRegion);
+      setToRegions(newList);
+      jDispatch({ type: "setTo", payload: newList[0] });
+    }
+  };
+
+  //get value for 1st/2nd round bus type
+
+  const getBusType = (route_round) => {
+    let bus_type;
+    if (route_round === "first_round") {
+      let first_round = journeyInfo.perDayRounds.find(
+        (round) => round.title === "1st round"
+      );
+      bus_type = first_round.busType;
+    } else {
+      let second_round = journeyInfo.perDayRounds.find(
+        (round) => round.title === "2nd round"
+      );
+      bus_type = second_round.busType;
+    }
+    return bus_type;
+  };
+
+  //handle new journey route registration...............
+  const handleSaveRoute = async () => {
+    console.log("final jInfo", journeyInfo);
+    if (
+      journeyInfo.perDayRounds.length < 1 ||
+      !journeyInfo.distance ||
+      !journeyInfo.price ||
+      !journeyInfo.from ||
+      !journeyInfo.to
+    ) {
+      dispatch(
+        activateFeedback({
+          status: "warning",
+          message: "please fill all fields before saving the route",
+        })
+      );
+
+      return;
+    }
+
+    await dispatch(registerRoute(journeyInfo));
+    jDispatch({ type: "resetRoute" });
+    setFirstRound(false);
+    setSecondRound(false);
+  };
+
+  const [updateRouteProperties, setUpdateRouteProperties] = useState({});
+  const handleEditRoute = (routeId) => {
+    const rt = routes.find((route) => route._id === routeId);
+    const firstRoundStatus = rt.perDayRounds.some(
+      (round) => round.title === "1st round"
+    );
+    const secondRoundStatus = rt.perDayRounds.some(
+      (round) => round.title === "2nd round"
+    );
+
+    setUpdateRouteProperties({ firstRoundStatus, secondRoundStatus });
+    setSelectedRoute(routeId);
+    setModalContent("updateRoute");
+    dispatch(openModal());
+  };
+
   useEffect(() => {
-    const getRegions = async () => {
+    const getRegionsAndRoutes = async () => {
       await dispatch(fetchRegions());
+      await dispatch(fetchRoutes());
     };
 
-    getRegions();
+    getRegionsAndRoutes();
+
+    return () => {
+      dispatch(deActivateFeedback());
+    };
   }, []);
+
+  useEffect(() => {
+    changeFromTo(regions[0]);
+  }, [regions]);
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -106,6 +300,79 @@ const Routes = () => {
 
   return (
     <>
+      <FeedbackMessage />
+      {isModalOpen && (
+        <Modal
+          columnSize={
+            modalContent === "updateRegion"
+              ? { md: 4, lg: 4 }
+              : { md: 4, lg: 4 }
+          }
+          contentAlignment="flex-start"
+        >
+          {modalContent === "updateRegion" ? (
+            <Paper
+              elevation={10}
+              sx={{ borderRadius: 4, p: 2, mt: { xs: 10, sm: 7, md: 0 } }}
+            >
+              <Stack direction="row" justifyContent="center">
+                <Box>
+                  <Typography
+                    className="text-primary"
+                    variant="h6"
+                    gutterBottom
+                  >
+                    Update the region
+                  </Typography>
+                  {isUpdatingRegion.status && (
+                    <Row>
+                      <img src={spinner} width="40" />
+                      <Typography variant="caption" className="text-primary">
+                        {isUpdatingRegion.message}
+                      </Typography>
+                    </Row>
+                  )}
+
+                  <TextField
+                    variant="outlined"
+                    size="small"
+                    sx={{ my: 1 }}
+                    value={selectedRegion}
+                    placeholder="enter region name"
+                    onChange={(e) => setSelectedRegion(e.target.value)}
+                  />
+                  <Row styles={{ marginTop: 1.5 }}>
+                    <Button
+                      onClick={handleUpdatedRegion}
+                      className="bg-primary"
+                      size="small"
+                      startIcon={<Edit />}
+                      variant="contained"
+                    >
+                      edit
+                    </Button>
+                    <Button
+                      size="small"
+                      sx={{ ml: 1 }}
+                      startIcon={<Delete />}
+                      color="error"
+                      variant="contained"
+                      onClick={handleDeleteRegion}
+                    >
+                      delete
+                    </Button>
+                  </Row>
+                </Box>
+              </Stack>
+            </Paper>
+          ) : (
+            <UpdateRouteForm
+              {...updateRouteProperties}
+              routeId={selectedRoute}
+            />
+          )}
+        </Modal>
+      )}
       <Box sx={{ mt: 1 }}>
         <Typography variant="h6" className="text-primary" sx={{ mb: 2 }}>
           Manage Regions & Routes
@@ -160,23 +427,23 @@ const Routes = () => {
                             key={index}
                             sx={{
                               mr: 0.2,
-                              mt:0.2,
+                              mt: 0.2,
                               color: "#808080",
                               borderColor: "#808080",
                             }}
                             size="small"
                             variant="outlined"
+                            onClick={() => handleOpenModal(region)}
                           >
                             {region}
                           </Button>
                         ))}
                       </Box>
-                        <div style={{display:"block"}}>  
-
+                      <div style={{ display: "block" }}>
                         <Typography className="text-primary" variant="caption">
                           click a region for more actions
                         </Typography>
-                        </div>
+                      </div>
                     </div>
                   ) : (
                     <Typography
@@ -201,46 +468,95 @@ const Routes = () => {
                   <Row styles={{ mt: 2 }}>
                     <FormControl>
                       <InputLabel id="fromR">From</InputLabel>
-                      <Select
-                        labelId="fromR"
-                        value={10}
-                        label="Age"
-                        onChange={() => console.log("hello")}
-                        size="small"
-                      >
-                        <MenuItem value={10}>Ten</MenuItem>
-                        <MenuItem value={20}>Twenty</MenuItem>
-                        <MenuItem value={30}>Thirty</MenuItem>
-                      </Select>
+                      {regions.length > 0 && (
+                        <Select
+                          labelId="fromR"
+                          value={journeyInfo.from}
+                          label="From"
+                          onChange={(e) => changeFromTo(e.target.value)}
+                          size="small"
+                        >
+                          {regions.map((region, index) => {
+                            return (
+                              <MenuItem key={index} value={region}>
+                                {region}
+                              </MenuItem>
+                            );
+                          })}
+                        </Select>
+                      )}
                     </FormControl>
-                    <FormControl sx={{ ml: 1 }}>
-                      <InputLabel id="toR">To</InputLabel>
-                      <Select
-                        labelId="toR"
-                        value={10}
-                        label="Age"
-                        onChange={() => console.log("hello")}
-                        size="small"
-                      >
-                        <MenuItem value={10}>Ten</MenuItem>
-                        <MenuItem value={20}>Twenty</MenuItem>
-                        <MenuItem value={30}>Thirty</MenuItem>
-                      </Select>
-                    </FormControl>
+                    {journeyInfo.from && regions.length > 1 ? (
+                      <FormControl sx={{ ml: 1 }}>
+                        <InputLabel id="toR">To</InputLabel>
+                        <Select
+                          labelId="toR"
+                          value={journeyInfo.to}
+                          label="to"
+                          onChange={(e) =>
+                            jDispatch({
+                              type: "setTo",
+                              payload: e.target.value,
+                            })
+                          }
+                          size="small"
+                        >
+                          {journeyInfo.from &&
+                            toRegions.map((region, index) => (
+                              <MenuItem key={index} value={region}>
+                                {region}
+                              </MenuItem>
+                            ))}
+                        </Select>
+                      </FormControl>
+                    ) : (
+                      ""
+                    )}
                   </Row>
+                  <TextField
+                    id="standard"
+                    label="route map link"
+                    variant="standard"
+                    type="text"
+                    size="small"
+                    sx={{ my: 1 }}
+                    value={journeyInfo.routeMap}
+                    onChange={(e) =>
+                      jDispatch({
+                        type: "setMap",
+                        payload: e.target.value,
+                      })
+                    }
+                  />
                   <TextField
                     id="standard"
                     label="Price (Tsh)"
                     variant="standard"
+                    type="number"
                     size="small"
                     sx={{ my: 1 }}
+                    value={journeyInfo.price}
+                    onChange={(e) =>
+                      jDispatch({
+                        type: "setPrice",
+                        payload: e.target.value,
+                      })
+                    }
                   />
                   <TextField
                     id="standard"
                     label="Distance (Km)"
                     variant="standard"
                     size="small"
+                    type="number"
                     sx={{ my: 1 }}
+                    value={journeyInfo.distance}
+                    onChange={(e) =>
+                      jDispatch({
+                        type: "setDistance",
+                        payload: e.target.value,
+                      })
+                    }
                   />
                   <Typography
                     className="text-primary"
@@ -250,44 +566,97 @@ const Routes = () => {
                   >
                     Available rounds per day
                   </Typography>
-                  <Box sx={{ display: "flex" }}>
-                    <FormControl
-                      sx={{ m: 1 }}
-                      component="fieldset"
-                      variant="standard"
-                    >
+                  <Box>
+                    <FormControl component="fieldset" variant="standard">
                       <FormGroup>
                         <FormControlLabel
                           control={
                             <Checkbox
                               checked={isFirstRoundChecked}
                               onChange={handleRoundsChange}
-                              name="first round"
+                              name="1st round"
                             />
                           }
                           label="1st round (06:00am)"
                         />
+                      </FormGroup>
+                    </FormControl>
+                    {isFirstRoundChecked && (
+                      <Row styles={{ marginBottom: 1 }}>
+                        <Typography sx={{ color: "#747474" }}>
+                          Bus type:
+                        </Typography>
+                        <Select
+                          value={getBusType("first_round")}
+                          sx={{ ml: 1 }}
+                          label="busType"
+                          onChange={(e) =>
+                            jDispatch({
+                              type: "setBusType",
+                              payload: {
+                                title: e.target.name,
+                                busType: e.target.value,
+                              },
+                            })
+                          }
+                          size="small"
+                          name="1st round"
+                          variant="standard"
+                        >
+                          <MenuItem value="2 By 2">2 By 2</MenuItem>
+                          <MenuItem value="2 By 3">2 By 3</MenuItem>
+                        </Select>
+                      </Row>
+                    )}
 
+                    <FormControl component="fieldset" variant="standard">
+                      <FormGroup>
                         <FormControlLabel
                           control={
                             <Checkbox
                               checked={isSecondRoundChecked}
                               onChange={handleRoundsChange}
-                              name="second round"
+                              name="2nd round"
                             />
                           }
                           label="2nd round (08:00am)"
                         />
                       </FormGroup>
-                      <FormHelperText>Check all that applies </FormHelperText>
                     </FormControl>
+                    {isSecondRoundChecked && (
+                      <Row styles={{ marginBottom: 1 }}>
+                        <Typography sx={{ color: "#747474" }}>
+                          Bus type:
+                        </Typography>
+                        <Select
+                          value={getBusType("second_round")}
+                          sx={{ ml: 1 }}
+                          label="btype"
+                          onChange={(e) =>
+                            jDispatch({
+                              type: "setBusType",
+                              payload: {
+                                title: e.target.name,
+                                busType: e.target.value,
+                              },
+                            })
+                          }
+                          size="small"
+                          name="2nd round"
+                          variant="standard"
+                        >
+                          <MenuItem value="2 By 2">2 By 2</MenuItem>
+                          <MenuItem value="2 By 3">2 By 3</MenuItem>
+                        </Select>
+                      </Row>
+                    )}
                   </Box>
                   <Button
                     variant="contained"
                     size="small"
                     sx={{ mt: 2, fontWeight: "bold" }}
                     className="grd-to-bottom-right"
-                    onClick={() => console.log(routeRounds)}
+                    onClick={handleSaveRoute}
                     fullWidth
                   >
                     Save Route
@@ -312,61 +681,111 @@ const Routes = () => {
                     (Select a region)
                   </Typography>
                   <Box mt={2}>
-                    <FormControl>
-                      <InputLabel id="toR">To</InputLabel>
-                      <Select
-                        labelId="toR"
-                        value={10}
-                        label="Age"
-                        onChange={() => console.log("hello")}
-                        size="small"
+                    <Row>
+                      {" "}
+                      {regions && (
+                        <FormControl>
+                          <InputLabel id="toR">From</InputLabel>
+                          <Select
+                            labelId="toR"
+                            value={routeCategory}
+                            label="Age"
+                            sx={{ minWidth: 50 }}
+                            onChange={(e) =>
+                              handleRoutesFetching(e.target.value)
+                            }
+                            size="small"
+                          >
+                            {[...regions, "all"].map((region) => (
+                              <MenuItem key={region} value={region}>
+                                {region}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      )}
+                      <Divider
+                        sx={{ mx: 1.5, my: 0.2, bgcolor: "#f0f0f4" }}
+                        orientation="vertical"
+                        flexItem
+                      />
+                      <Button
+                        onClick={() => handleRoutesFetching("all")}
+                        sx={{ color: "#5f5f5f", bgcolor: "#e9e9ed" }}
                       >
-                        <MenuItem value={10}>Ten</MenuItem>
-                        <MenuItem value={20}>Twenty</MenuItem>
-                        <MenuItem value={30}>Thirty</MenuItem>
-                      </Select>
-                    </FormControl>
+                        all routes
+                      </Button>
+                    </Row>
                     <Box mt={2}>
                       <Divider />
 
-                      <Typography
-                        className="text-primary"
-                        variant="body2"
-                        sx={{ my: 1, fontWeight: "bold" }}
-                      >
-                        Arusha routes
-                      </Typography>
+                      <Row>
+                        {" "}
+                        <Typography
+                          className="text-primary"
+                          variant="body2"
+                          sx={{ my: 1, fontWeight: "bold" }}
+                          gutterBottom
+                        >
+                          {routeCategory} routes
+                        </Typography>{" "}
+                        <Typography
+                          sx={{ ml: 1, mr: 1, color: "#98989b" }}
+                          variant="body2"
+                        >
+                          Total:
+                          <span style={{ fontWeight: "bold" }}>
+                            {" "}
+                            {routes.length}
+                          </span>
+                        </Typography>
+                        {isFetchingRoutes && <img src={spinner} width="40" />}
+                      </Row>
                       <TableContainer component={Box}>
                         <Table aria-label="today's tickets">
-                          <TableHead>
-                            <TableRow>
-                              <TableCell>
-                                <span className="font-bold">#Sno</span>
-                              </TableCell>
-                              <TableCell align="left">
-                                <span className="font-bold">From</span>
-                              </TableCell>
-                              <TableCell align="left">
-                                <span className="font-bold">To</span>
-                              </TableCell>
-                              <TableCell align="left">
-                                <span className="font-bold">Price(Tsh)</span>
-                              </TableCell>
-                              <TableCell>&nbsp;</TableCell>
-                            </TableRow>
-                          </TableHead>
+                          {routes.length > 0 && (
+                            <TableHead>
+                              <TableRow>
+                                <TableCell>
+                                  <span className="font-bold">#Sno</span>
+                                </TableCell>
+                                <TableCell align="left">
+                                  <span className="font-bold">From</span>
+                                </TableCell>
+                                <TableCell align="left">
+                                  <span className="font-bold">To</span>
+                                </TableCell>
+                                <TableCell align="left">
+                                  <span className="font-bold">Price(Tsh)</span>
+                                </TableCell>
+                                <TableCell>&nbsp;</TableCell>
+                              </TableRow>
+                            </TableHead>
+                          )}
+
                           <TableBody>
-                            <TableRow>
-                              <TableCell align="left">1</TableCell>
-                              <TableCell align="left">arusha</TableCell>
-                              <TableCell align="left">morogoro</TableCell>
-                              <TableCell align="left">30000</TableCell>
-                              <TableCell align="left">
-                                <IconButton>
-                                  <Edit className="text-primary" />{" "}
-                                </IconButton>{" "}
-                              </TableCell>
-                            </TableRow>
+                            {routes.length > 0 &&
+                              routes.map((route, index) => (
+                                <TableRow key={route._id}>
+                                  <TableCell align="left">
+                                    {index + 1}
+                                  </TableCell>
+                                  <TableCell align="left">
+                                    {route.from}
+                                  </TableCell>
+                                  <TableCell align="left">{route.to}</TableCell>
+                                  <TableCell align="left">
+                                    {Number(route.price).toFixed()}
+                                  </TableCell>
+                                  <TableCell align="left">
+                                    <IconButton
+                                      onClick={() => handleEditRoute(route._id)}
+                                    >
+                                      <Edit className="text-primary" />{" "}
+                                    </IconButton>{" "}
+                                  </TableCell>
+                                </TableRow>
+                              ))}
                           </TableBody>
                         </Table>
                       </TableContainer>

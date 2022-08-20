@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
+  Divider,
   IconButton,
   InputBase,
   Paper,
@@ -48,7 +49,6 @@ const Users = () => {
   };
   useEffect(() => {
     dispatch(fetchUsers());
-   
   }, []);
 
   if (isLoading) {
@@ -56,7 +56,6 @@ const Users = () => {
   }
   return (
     <>
-      {/* feedback message............................. */}
       {isModalOpen && (
         <Modal columnSize={{ md: 7, lg: 7 }} contentAlignment="flex-start">
           <UserDetails user={selected_user} />
@@ -89,6 +88,7 @@ const Users = () => {
                 )}
               </Stack>
             </Box>
+            <Divider sx={{my:1.5,mx:1}} orientation="vertical" flexItem />
             <Button
               className="text-primary"
               variant="text"
@@ -99,7 +99,8 @@ const Users = () => {
           </Stack>
 
           <Typography sx={{ ml: 1, mt: 2, color: "#98989b" }} gutterBottom>
-            Users Count: <span style={{fontWeight:"bold"}}>{users.length}</span> 
+            Users Count:{" "}
+            <span style={{ fontWeight: "bold" }}>{users.length}</span>
           </Typography>
           {users.length < 1 ? (
             <center>

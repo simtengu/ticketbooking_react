@@ -5,6 +5,7 @@ import { store } from './store';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './styles/index.css';
+import "react-datepicker/dist/react-datepicker.css";
 import { BrowserRouter } from 'react-router-dom';
 
 const container = document.getElementById('root');
@@ -12,12 +13,12 @@ const root = createRoot(container);
 
 root.render(
   <React.StrictMode>
-  <BrowserRouter>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  
-  </BrowserRouter>
+    <BrowserRouter>
+      <Provider store={store}>
+        <App />
+      </Provider>
+
+    </BrowserRouter>
   </React.StrictMode>
 );
 
