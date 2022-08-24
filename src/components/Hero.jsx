@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { publicApi } from "../api";
 import { activateLoading, deActivateLoading } from "../store/features/errorAndFeedback";
 import { fetchRegions, setRegions } from "../store/features/profile";
+import { setFrom, setTo } from "../store/features/ticketbooking";
 import LoadingSpinner from "./utils/LoadingSpinner";
 const Hero = () => {
  const navigate = useNavigate();
@@ -34,7 +35,11 @@ const Hero = () => {
   };
 
   const handleSubmitRoute = ()=>{
-  if(fromR&&toR) navigate(`/journey/${fromR}/${toR}`)
+  if(fromR&&toR){
+    dispatch(setFrom(fromR))
+    dispatch(setTo(toR))
+    navigate(`/journey/${fromR}/${toR}`);
+  } 
   }
   useEffect(() => {
     const getRegions = async ()=>{

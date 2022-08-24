@@ -36,30 +36,28 @@ const JourneyDetails = () => {
   //state management...............................................
   const {
     profile: { regions },
-    booking,
+    booking: { routeInfo, departingDate },
   } = useSelector((state) => state);
 
-  const [fromRegion, setFromRegion] = useState(params.fromRegion || "");
-  const [toRegion, setToRegion] = useState(params.toRegion || "");
+  const [fromRegion, setFromRegion] = useState(
+    routeInfo?.from || params.fromRegion
+  );
+  const [toRegion, setToRegion] = useState(routeInfo?.to || params.toRegion);
   const [loading, setLoading] = useState(true);
   const [mapDisplay, setMapDisplay] = useState("none");
 
   const fetchRouteAndTickets = async (toRgn) => {
     setLoading(true);
-    await dispatch(fetchRouteAndTakenTickets({ fromRegion, toRegion:toRgn }));
+    await dispatch(fetchRouteAndTakenTickets({ fromRegion, toRegion: toRgn }));
     setLoading(false);
   };
 
-  const handleChangeToRegion = (toValue)=>{
-    
-      setToRegion(toValue);
-      dispatch(setFrom(fromRegion));
-      dispatch(setTo(toValue));
-      fetchRouteAndTickets(toValue);
-    
-  }
-
-
+  const handleChangeToRegion = (toValue) => {
+    setToRegion(toValue);
+    dispatch(setFrom(fromRegion));
+    dispatch(setTo(toValue));
+    fetchRouteAndTickets(toValue);
+  };
 
   useEffect(() => {
     const getRegions = async () => {
@@ -75,9 +73,8 @@ const JourneyDetails = () => {
   }, []);
 
   useEffect(() => {
-
     fetchRouteAndTickets(toRegion);
-  }, []);
+  }, [departingDate]);
 
   return (
     <>
@@ -130,7 +127,9 @@ const JourneyDetails = () => {
                               margin="normal"
                               name="From"
                               value={toRegion}
-                              onChange={(e) => handleChangeToRegion(e.target.value)}
+                              onChange={(e) =>
+                                handleChangeToRegion(e.target.value)
+                              }
                             >
                               {regions
                                 .filter((region) => region !== fromRegion)
@@ -179,15 +178,15 @@ const JourneyDetails = () => {
                           }}
                         >
                           <iframe
-                            src={booking.routeInfo ? booking.routeInfo.routeMap : ""}
+                            src={routeInfo ? routeInfo.routeMap : ""}
                             style={{
                               border: 0,
                               width: "100%",
                               minHeight: "400px",
                             }}
-                            allowfullscreen=""
+                            allowFullScreen=""
                             loading="lazy"
-                            referrerpolicy="no-referrer-when-downgrade"
+                            referrerPolicy="no-referrer-when-downgrade"
                           ></iframe>
                         </Box>
                       </Box>
@@ -197,7 +196,7 @@ const JourneyDetails = () => {
                 <Grid item xs={12} md={7} className="journey-details-div">
                   <Box sx={{ p: 1.5 }}>
                     {loading && <MainBodySkeleton />}
-                    {!loading && booking.routeInfo ? (
+                    {!loading && routeInfo ? (
                       <TicketDetails />
                     ) : (
                       <Stack
@@ -211,8 +210,8 @@ const JourneyDetails = () => {
                             variant="body2"
                             sx={{ fontWeight: "bold" }}
                           >
-                            we have not yet established our service for the journey
-                            route you provided.
+                            we have not yet established our service for the
+                            journey route you provided.
                           </Typography>
                         </center>
                       </Stack>

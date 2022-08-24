@@ -30,7 +30,7 @@ const Dashboard = () => {
         </Grid>
 
         <Box sx={{ mt: 10 }}>
-          <Typography variant="h6" className="text-primary" gutterbottom>
+          <Typography variant="h6" className="text-primary" gutterBottom>
             Today's booked tickets
           </Typography>
           <TableContainer component={Paper}>

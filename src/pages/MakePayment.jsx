@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import {
   Alert,
   AlertTitle,
@@ -9,7 +10,6 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
 import payment from "../assets/payment.png";
 import paypal from "../assets/paypal.png";
 import pypl from "../assets/pypl.JPG";
@@ -21,13 +21,31 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { bookingTicket } from "../store/features/ticketbooking";
 import FeedbackMessage from "../components/utils/FeedbackMessage";
-import { activateFeedback } from "../store/features/errorAndFeedback";
+import {
+  activateFeedback,
+  deActivateFeedback,
+} from "../store/features/errorAndFeedback";
+import ConfirmationModal from "../components/utils/ConfirmationModal";
 const MakePayment = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { selectedTickets } = useSelector((state) => state.booking);
   const [isPaymentDone, setIsPaymentDone] = useState(false);
-  const handleSubmitPayment = async () => {
+  const [isConfirmPaymentOpen, setIsConfirmPaymentOpen] = useState(false);
+
+  const handleAcceptMakePayment = async () => {
+    setIsConfirmPaymentOpen(false);
+    try {
+      await dispatch(bookingTicket());
+      setIsPaymentDone(true);
+    } catch (error) {
+      const error_message = error.response
+        ? error.response.data.message
+        : error.message;
+      dispatch(activateFeedback({ status: "error", message: error_message }));
+    }
+  };
+  const handleSubmitPayment = () => {
     //checking if there are tickets selected and filled
 
     //checking if all tickets are filled with all neccessary information.........
@@ -53,22 +71,24 @@ const MakePayment = () => {
       );
       return;
     }
-
-    if (window.confirm("YOU ARE ABOUT TO MAKE PAYMENT FOR YOUR TICKET")) {
-      try {
-        await dispatch(bookingTicket());
-setIsPaymentDone(true)
-       
-      } catch (error) {
-        const error_message = error.response
-          ? error.response.data.message
-          : error.message;
-        dispatch(activateFeedback({ status: "error", message: error_message }));
-      }
-    }
+    setIsConfirmPaymentOpen(true);
   };
+
+  useEffect(() => {
+    return () => {
+      dispatch(deActivateFeedback());
+    };
+  }, []);
   return (
     <>
+      {isConfirmPaymentOpen && (
+        <ConfirmationModal
+          heading="You are about to make payment for your ticket"
+          middleParagraph=" proceed with payment"
+          closeModal={() => setIsConfirmPaymentOpen(false)}
+          handleConfirmAction={handleAcceptMakePayment}
+        />
+      )}
       <FeedbackMessage />
       <Container sx={{ py: 10, minHeight: "60vh" }}>
         <Grid container justifyContent="center">
@@ -91,20 +111,24 @@ setIsPaymentDone(true)
                         sx={{
                           p: 2,
                           mb: 2,
-                     
                         }}
                       >
-                        <Alert sx={{mb:1.4}}  severity="success">
+                        <Alert sx={{ mb: 1.4 }} severity="success">
                           <AlertTitle>Payment received successfully</AlertTitle>
-                          Use the download button below to download a pdf copy of your ticket
+                          Use the download button below to download a pdf copy
+                          of your ticket
                         </Alert>
                         <center>
-                          <Button color="success"
+                          <Button
+                            color="success"
                             variant="contained"
                             size="large"
-                            sx={{ textTransform: "capitalize","&:hover":{borderRadius:12} }}
-                         onClick={()=>navigate("/tickets/download")}
-                         >
+                            sx={{
+                              textTransform: "capitalize",
+                              "&:hover": { borderRadius: 12 },
+                            }}
+                            onClick={() => navigate("/tickets/download")}
+                          >
                             download ticket here
                           </Button>
                         </center>

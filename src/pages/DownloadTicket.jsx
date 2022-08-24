@@ -1,4 +1,4 @@
-import { DoubleArrow, Download } from "@mui/icons-material";
+import { DoubleArrow, Download, Phone } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -29,7 +29,7 @@ const DownloadTicket = () => {
         <Grid container justifyContent="center">
           <Grid item xs={11} md={10} lg={9}>
             <Paper sx={{ borderRadius: 3, p: 3 }}>
-              {passengerBookedTickets.length > 1 ? (
+              {passengerBookedTickets.length > 0 ? (
                 <Box>
                   <center>
                     <Typography
@@ -46,7 +46,7 @@ const DownloadTicket = () => {
                       <Box sx={{ mt: 3 }}>
                         {/* ticket container................................ */}
                         {passengerBookedTickets.map((ticket) => (
-                          <Box key={ticket._id}>
+                          <Box sx={{my:1}} key={ticket._id}>
                             <Grid container sx={{ mb: 1 }} spacing={1}>
                               <Grid item xs={12} sm={11} md={10} sx={{ p: 1 }}>
                                 <Box
@@ -63,7 +63,7 @@ const DownloadTicket = () => {
                                           >
                                             <Row>
                                               <Typography
-                                                className="text-secondary"
+                                                sx={{ color: "#ffed6c" }}
                                                 variant="body1"
                                               >
                                                 Name:
@@ -73,7 +73,7 @@ const DownloadTicket = () => {
                                                 variant="body1"
                                                 className="text-light"
                                               >
-                                                Albert oscar
+                                                {ticket.owner.name}
                                               </Typography>
                                             </Row>
                                           </TableCell>
@@ -83,7 +83,7 @@ const DownloadTicket = () => {
                                           >
                                             <Row>
                                               <Typography
-                                                className="text-secondary"
+                                                sx={{ color: "#ffed6c" }}
                                                 variant="body1"
                                               >
                                                 Gender:
@@ -93,7 +93,7 @@ const DownloadTicket = () => {
                                                 variant="body1"
                                                 className="text-light"
                                               >
-                                                Male
+                                                {ticket.owner.gender}
                                               </Typography>
                                             </Row>
                                           </TableCell>
@@ -105,17 +105,22 @@ const DownloadTicket = () => {
                                           >
                                             <Row>
                                               <Typography
-                                                className="text-secondary"
+                                                sx={{ color: "#ffed6c" }}
                                                 variant="body1"
                                               >
-                                                Phone:
+                                                Price:
                                               </Typography>
                                               <Typography
                                                 sx={{ ml: 1 }}
                                                 variant="body1"
                                                 className="text-light"
                                               >
-                                                0787468826
+                                                {Intl.NumberFormat(
+                                                  "en-US"
+                                                ).format(
+                                                  Number(ticket.price)
+                                                )}{" "}
+                                                Tsh
                                               </Typography>
                                             </Row>
                                           </TableCell>
@@ -125,7 +130,7 @@ const DownloadTicket = () => {
                                           >
                                             <Row>
                                               <Typography
-                                                className="text-secondary"
+                                                sx={{ color: "#ffed6c" }}
                                                 variant="body1"
                                               >
                                                 Seat Number:
@@ -138,7 +143,7 @@ const DownloadTicket = () => {
                                                 }}
                                                 variant="h6"
                                               >
-                                                33
+                                                {ticket.ticketNumber}
                                               </Typography>
                                             </Row>
                                           </TableCell>
@@ -151,7 +156,7 @@ const DownloadTicket = () => {
                                           >
                                             <Row>
                                               <Typography
-                                                className="text-secondary"
+                                                sx={{ color: "#ffed6c" }}
                                                 variant="body1"
                                               >
                                                 Journey route:
@@ -161,11 +166,11 @@ const DownloadTicket = () => {
                                                 variant="body1"
                                                 className="text-light"
                                               >
-                                                Arusha{" "}
-                                                <span className="text-secondary">
+                                                {ticket.from}{" "}
+                                                <span style={{ color: "#ffed6c" }}>
                                                   to
                                                 </span>{" "}
-                                                Dar es salaam
+                                                {ticket.to}
                                               </Typography>
                                             </Row>
                                           </TableCell>
@@ -178,7 +183,7 @@ const DownloadTicket = () => {
                                           >
                                             <Row>
                                               <Typography
-                                                className="text-secondary"
+                                                sx={{ color: "#ffed6c" }}
                                                 varian="body1"
                                               >
                                                 Departing Date:
@@ -188,8 +193,10 @@ const DownloadTicket = () => {
                                                 variant="body1"
                                                 className="text-light"
                                               >
-                                                {new Date().toDateString()},
-                                                06:00 am
+                                                {new Date(
+                                                  ticket.departingDate
+                                                ).toDateString()}
+                                                ,{ticket.round.split(" ")[2]}
                                               </Typography>
                                             </Row>
                                           </TableCell>
@@ -197,6 +204,49 @@ const DownloadTicket = () => {
                                       </TableBody>
                                     </Table>
                                   </TableContainer>
+
+                                  <Stack
+                                    sx={{ mt: 1 }}
+                                    direction="row"
+                                    justifyContent="center"
+                                    alignItems="center"
+                                  >
+                                    <Stack
+                                      direction="row"
+                                      justifyContent="center"
+                                      alignItems="center"
+                                    >
+                                      <Typography variant="body2">
+                                        <i>
+                                          <Phone color="primary" />
+                                        </i>{" "}
+                                      </Typography>
+                                      <Typography
+                                        sx={{ ml: 1 }}
+                                        variant="body2"
+                                      >
+                                        0710162838
+                                      </Typography>
+                                    </Stack>
+                                    <Stack
+                                      sx={{ ml: 2 }}
+                                      direction="row"
+                                      justifyContent="center"
+                                      alignItems="center"
+                                    >
+                                      <Typography variant="body2">
+                                        <i>
+                                          <Phone color="primary" />
+                                        </i>{" "}
+                                      </Typography>
+                                      <Typography
+                                        sx={{ ml: 1 }}
+                                        variant="body2"
+                                      >
+                                        0625772838
+                                      </Typography>
+                                    </Stack>
+                                  </Stack>
                                 </Box>
                               </Grid>
                               <Grid item xs={12} sm={1} md={2}>
@@ -228,24 +278,25 @@ const DownloadTicket = () => {
                   </Grid>
                 </Box>
               ) : (
-                <Box sx={{display:"flex",flexDirection:"column", justifyContent:"center",alignItems:"center"}}>
-                  
-                    <Typography
-                      variant="h3"
-                      sx={{
-                        fontWeight: "bold",
-                        fontSize: { xs: "1.5em", sm: "1.8em" },
-                      }}
-                      className="signupText"
-                    >
-                      No tickets available
-                    </Typography>
-                    <img
-                     
-                      src={no_result}
-                      alt="no result"
-                    />
-                 
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography
+                    variant="h3"
+                    sx={{
+                      fontWeight: "bold",
+                      fontSize: { xs: "1.5em", sm: "1.8em" },
+                    }}
+                    className="signupText"
+                  >
+                    No tickets available
+                  </Typography>
+                  <img src={no_result} alt="no result" />
                 </Box>
               )}
             </Paper>

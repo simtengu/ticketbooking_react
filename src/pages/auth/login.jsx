@@ -33,9 +33,7 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  let path;
-  console.log("location", location.state.from);
-  path = location.state.from;
+
   // if(location?.state?.from){
   //   path = location.state.from.pathname
   // }else{
@@ -57,11 +55,11 @@ const Login = () => {
     }
   };
 
-  useEffect(() => {
-    if (user.email) {
-      navigate("/admin/tickets", { replace: true });
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user.email) {
+  //     navigate("/admin/tickets", { replace: true });
+  //   }
+  // }, [user]);
 
   return (
     <>
@@ -89,7 +87,7 @@ const Login = () => {
               <Typography
                 variant="caption"
                 sx={{ color: "#797979", fontWeight: "bold" }}
-                gutterbottom
+                gutterBottom
               >
                 Provide your credentials to login
               </Typography>
@@ -128,6 +126,7 @@ const Login = () => {
                   </FormControl>
 
                   <Button
+                    type="submit"
                     variant="contained"
                     className="grd-to-bottom-right"
                     sx={{ mt: 2, fontWeight: "bold" }}

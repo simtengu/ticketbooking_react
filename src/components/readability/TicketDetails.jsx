@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import DatePicker from "react-datepicker";
 import { DoorFrontOutlined } from "@mui/icons-material";
 import {
@@ -31,12 +31,14 @@ import FeedbackMessage from "../utils/FeedbackMessage";
 import {
   setBusType,
   setRound,
+  setTakenTickets,
   updateDepartingDate,
   updateSelectedTickets,
 } from "../../store/features/ticketbooking";
 import useAuth from "../../hookes/useAuth";
 import {
   activateFeedback,
+  deActivateFeedback,
   openModal,
 } from "../../store/features/errorAndFeedback";
 import Modal from "../utils/Modal";
@@ -44,16 +46,20 @@ const TicketDetails = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { selectedTickets, takenTickets } = useSelector(
-    (state) => state.booking
-  );
+  const {
+    selectedTickets,
+    takenTickets,
+    departingDate: dptDate,
+    takenTicketsByRound,
+  } = useSelector((state) => state.booking);
   const authUser = useAuth();
   //component's state section ...............................................
   const {
     booking,
     feedback: { isModalOpen },
   } = useSelector((state) => state);
-  const [departingDate, setDepartingDate] = useState(new Date());
+  const initialDate = dptDate ? new Date(dptDate) : new Date();
+  const [departingDate, setDepartingDate] = useState(initialDate);
   //end of component's state section ...............................................
 
   //handling customer details for each selected ticket.................
@@ -64,8 +70,14 @@ const TicketDetails = () => {
     const round = booking.routeInfo.perDayRounds.find(
       (round) => round.round === selected_round
     );
+    const tknTickets =
+      selected_round === "1st round (06:00am)"
+        ? takenTicketsByRound.roundOneTickets
+        : takenTicketsByRound.roundTwoTickets;
     dispatch(setRound(selected_round));
     dispatch(setBusType(round.busType));
+    dispatch(updateSelectedTickets([]));
+    dispatch(setTakenTickets(tknTickets));
   };
 
   //handle use logged in user details for a current selected ticket...............
@@ -132,13 +144,19 @@ const TicketDetails = () => {
       dispatch(
         activateFeedback({
           status: "error",
-          message: `Please add passenger details for each ticket you have selected`,
+          message: `Please add passenger details for each seat you have selected`,
         })
       );
       return;
     }
     navigate("/tickets/payment");
   };
+
+  useEffect(() => {
+    return () => {
+      dispatch(deActivateFeedback());
+    };
+  }, []);
 
   return (
     <Box>
@@ -289,7 +307,7 @@ const TicketDetails = () => {
             }}
             gutterBottom
           >
-            It's time to select your ticket(s)
+            It's time to select your seat(s)
           </Typography>
         </center>
         <Grid container justifyContent="center">
@@ -342,7 +360,7 @@ const TicketDetails = () => {
                 }}
                 gutterBottom
               >
-                add passenger details for each ticket
+                add passenger details for each seat
               </Typography>
               <Typography
                 className="text-dark"
@@ -350,7 +368,7 @@ const TicketDetails = () => {
                 sx={{ fontWeight: "bold", display: "block" }}
                 gutterBottom
               >
-                (Click on a ticket to select it)
+                (Click on a seat number to select it)
               </Typography>
             </center>
             <Box
@@ -391,7 +409,7 @@ const TicketDetails = () => {
                     <Paper elevation={6} sx={{ p: 3, borderRadius: 4 }}>
                       <Box py={2} px={1}>
                         <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                          Selected ticket number: {currentTicket.ticketNumber}
+                          Selected seat number: {currentTicket.ticketNumber}
                         </Typography>
                         <Typography
                           className="text-primary"
@@ -422,7 +440,7 @@ const TicketDetails = () => {
                                 Click here
                               </Button>
                               <span style={{ marginLeft: 3 }}>
-                                to use your own details for this ticket.
+                                to use your own details for this seat.
                               </span>
                             </div>
                           )}

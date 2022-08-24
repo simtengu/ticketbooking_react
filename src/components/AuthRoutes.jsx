@@ -12,9 +12,8 @@ const AuthRoutes = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const location = useLocation();
-    const path = location.state?.from?.pathname || "/";
+    const path = location.state.from || "/";
   const [loading, setLoading] = useState(authUser.email ? false : true);
-
 
   useEffect(() => {
     const fetch_user = async () => {

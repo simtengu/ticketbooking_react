@@ -7,11 +7,14 @@ export const fetchRouteAndTakenTickets = createAsyncThunk("ticketbooking/fetchRo
     const { fromRegion, toRegion } = routeInfo
     let route = {}
     let tickets = []
+    const { booking: { departingDate: dptDate}} = thunkApi.getState()
+    let date = new Date(dptDate)
+
     try {
         const result = Promise.all([publicApi.get(
             `/tickets/route?fromRegion=${fromRegion}&toRegion=${toRegion}`
         ), publicApi.get(
-            `/tickets?fromRegion=${fromRegion}&toRegion=${toRegion}`
+            `/tickets?fromRegion=${fromRegion}&toRegion=${toRegion}&departingDate=${date.getTime()}`
         )])
 
         await result.then(rsData => {
@@ -34,6 +37,10 @@ const initialState = {
     distance: "",
     departingDate: new Date().toISOString(),
     round: "",
+    takenTicketsByRound: {
+        roundOneTickets: [],
+        roundTwoTickets: []
+    },
     takenTickets: [],
     selectedTickets: [],
     passengerBookedTickets: []
@@ -56,6 +63,9 @@ const ticketBookingSlice = createSlice({
         },
         setRound: (state, action) => {
             state.round = action.payload
+        },
+        setTakenTickets: (state, action) => {
+            state.takenTickets = action.payload
         },
         updateSelectedTickets: (state, action) => {
             state.selectedTickets = action.payload
@@ -86,7 +96,32 @@ const ticketBookingSlice = createSlice({
 
             state.routeInfo = { from: route.from, to: route.to, routeMap: route.routeMap, perDayRounds: rounds }
             state.round = rounds[0].round
-            state.takenTickets = tickets
+            //arranging taken tickets by round-category............
+            //chacking if there wasn't any taken tickets.......
+            if (tickets.length < 1) {
+                state.takenTicketsByRound = {
+                    roundOneTickets: [],
+                    roundTwoTickets: []
+                }
+                state.takenTickets = []
+            } else {
+                
+                let roundOneTakenTickets = tickets.filter(ticket => ticket.round === "1st round (06:00am)")
+                let roundTwoTakenTickets = tickets.filter(ticket => ticket.round !== "1st round (06:00am)")
+                
+                //assigning taken tickets depending on initial round set.
+                const tknTickets = rounds[0].round === "1st round (06:00am)" ? roundOneTakenTickets : roundTwoTakenTickets
+                
+                state.takenTicketsByRound = {
+                    roundOneTickets: roundOneTakenTickets,
+                    roundTwoTickets: roundTwoTakenTickets
+                }
+                state.takenTickets = tknTickets
+
+            }
+
+            state.passengerBookedTickets = []
+            state.selectedTickets = []
             state.distance = route.distance
             state.price = route.price
             state.busType = rounds[0].busType
@@ -98,36 +133,34 @@ const ticketBookingSlice = createSlice({
 
 })
 
-export const { setFrom, setTo, setBusType, setRound, updateDepartingDate, updateSelectedTickets, setBookedTickets } = ticketBookingSlice.actions
+export const { setFrom, setTo, setBusType, setRound, updateDepartingDate, setTakenTickets, updateSelectedTickets, setBookedTickets } = ticketBookingSlice.actions
 
 
 export const bookingTicket = () => async (dispatch, getState) => {
-    
-        const { booking } = getState();
-        let {
-            routeInfo: { from, to },
-            price,
-            busType,
-            departingDate,
-            round, selectedTickets
-        } = booking
+
+    const { booking } = getState();
+    let {
+        routeInfo: { from, to },
+        price,
+        busType,
+        departingDate,
+        round, selectedTickets
+    } = booking
 
 
-        selectedTickets = selectedTickets.map(ticket => {
-            let owner = { name: `${ticket.firstName} ${ticket.lastName}`, gender: ticket.gender, phone: ticket.phone }
-            return { owner, from, to, price, busType, departingDate, round, ticketNumber: ticket.ticketNumber }
-        })
+    selectedTickets = selectedTickets.map(ticket => {
+        let owner = { name: `${ticket.firstName} ${ticket.lastName}`, gender: ticket.gender, phone: ticket.phone }
+        return { owner, from, to, price, busType, departingDate, round, ticketNumber: ticket.ticketNumber }
+    })
 
-        const data = { tickets: selectedTickets }
-        const rs = await publicApi.post("/tickets",data);
-        const rsData = rs.data;
-        if(rs.status === 201){
-
-            console.log("rsData",rsData)
-            const bookedTickets = rsData.tickets;
-            const takenTickets = selectedTickets.map(ticket=>ticket.ticketNumber)
-            dispatch(setBookedTickets({bookedTickets,takenTickets}))
-        }
+    const data = { tickets: selectedTickets }
+    const rs = await publicApi.post("/tickets", data);
+    const rsData = rs.data;
+    if (rs.status === 201) {
+        const bookedTickets = rsData.tickets;
+        const takenTickets = selectedTickets.map(ticket => ticket.ticketNumber)
+        dispatch(setBookedTickets({ bookedTickets, takenTickets }))
+    }
 
 }
 
