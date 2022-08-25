@@ -51,6 +51,7 @@ const TicketDetails = () => {
     takenTickets,
     departingDate: dptDate,
     takenTicketsByRound,
+    round,
   } = useSelector((state) => state.booking);
   const authUser = useAuth();
   //component's state section ...............................................
@@ -60,6 +61,33 @@ const TicketDetails = () => {
   } = useSelector((state) => state);
   const initialDate = dptDate ? new Date(dptDate) : new Date();
   const [departingDate, setDepartingDate] = useState(initialDate);
+  const [today, setToday] = useState(new Date());
+
+  const isBookingOpen = () => {
+    let bookingTime = today.getTime();
+    let dptDayTime = departingDate.getTime();
+
+    let dptDate = parseInt(departingDate.getDate());
+    let dptMonth = parseInt(departingDate.getMonth()) - 1;
+    let dptYear = parseInt(departingDate.getFullYear());
+
+    //for ticket booking on the same date to departing date............ (checking if time is up)
+    if (today.toLocaleDateString() === departingDate.toLocaleDateString()) {
+      let dptExactTime =
+        round == "1st round (06:00am)"
+          ? new Date(dptYear, dptMonth, dptDate, 5, 30)
+          : new Date(dptYear, dptMonth, dptDate, 7, 30);
+
+      dptExactTime = dptExactTime.getTime();
+      if (bookingTime > dptExactTime) return false;
+      return true;
+    }
+    //for ticket booking on different date to departing date............ (checking if time is up)
+
+    if (bookingTime > dptDayTime) return false;
+    return true;
+  };
+
   //end of component's state section ...............................................
 
   //handling customer details for each selected ticket.................
@@ -298,7 +326,7 @@ const TicketDetails = () => {
       <Box py={2}>
         <center>
           <Typography
-            className="text-primary"
+            className={isBookingOpen() ? `text-primary` : `text-danger`}
             variant="button"
             sx={{
               textTransform: "",
@@ -307,13 +335,24 @@ const TicketDetails = () => {
             }}
             gutterBottom
           >
-            It's time to select your seat(s)
+            {isBookingOpen()
+              ? "It's time to select your seat(s)"
+              : "Booking already closed for this day"}
           </Typography>
         </center>
+
         <Grid container justifyContent="center">
           <Grid item xs={11} md={7}>
             {/* tickets form....................... */}
-            <Box my={2} className="bus">
+            <Box
+              my={2}
+              sx={{
+                border: isBookingOpen()
+                  ? "2px solid #31b0bb"
+                  : "2px solid #d20015",
+              }}
+              className="bus"
+            >
               <Grid container alignItems="flex-end">
                 <Grid item xs={5} sx={{ px: 0.3 }}>
                   <Button
@@ -348,7 +387,7 @@ const TicketDetails = () => {
             {/* end of tickets form....................... */}
           </Grid>
         </Grid>
-        {selectedTickets.length > 0 && (
+        {isBookingOpen() && selectedTickets.length > 0 ? (
           <Box mt={4}>
             <center>
               <Typography
@@ -555,6 +594,8 @@ const TicketDetails = () => {
               </center>
             </Box>
           </Box>
+        ) : (
+          ""
         )}
       </Box>
     </Box>
