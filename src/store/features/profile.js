@@ -1,14 +1,50 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { publicApi } from "../../api";
+import { publicApi, secureApi } from "../../api";
 import { activateFeedback, activateLoading, deActivateLoading } from "./errorAndFeedback";
 
 
+export const fetchTickets = createAsyncThunk("profile/fetchTickets", async (filterString, thunkApi) => {
+
+    try {
+        const rs = await publicApi.get(`/tickets?${filterString}`);
+        const rsData = rs.data;
+        let tickets = rsData.tickets
+        let count = rsData.count
+        return { tickets, count };
+    } catch (error) {
+        return thunkApi.rejectWithValue('something went wrong ....')
+    }
+
+})
+
+export const fetchDashboardDetails = createAsyncThunk("profile/dashboardDetailsFetch", async () => {
+
+
+    const rs = await secureApi.get("/admin/dashboard/details");
+    const rsData = rs.data;
+    const ticketsCount = rsData.tickets
+    const todayTickets = rsData.todayTickets
+    const usersCount = rsData.users
+    const messagesCount = rsData.messages
+    const busesCount = rsData.buses
+    const regionsCount = rsData.regions
+    const totalIncome = rsData.income
+
+    return { dashboardCounts:{ticketsCount, usersCount, totalIncome, messagesCount, busesCount, regionsCount} , todayTickets };
+
+
+})
+
 const initialState = {
+    dashboardCounts: { ticketsCount: 0, usersCount: 0, messagesCount: 0, busesCount: 0, regionsCount: 0, totalIncome: 0 },
     users: [],
+    selectedUser: "",
     messages: [],
-    buses: [],
     regions: [],
-    routes: []
+    routes: [],
+    buses: [],
+    tickets: [],
+    ticketsCount: 0
 }
 
 const profileSlice = createSlice({
@@ -16,10 +52,22 @@ const profileSlice = createSlice({
     initialState,
     reducers: {
         addBus: (state, action) => {
+            state.buses.push(action.payload)
+        },
+        addFetchedBuses: (state, action) => {
             state.buses = action.payload
         },
         addUsers: (state, action) => {
             state.users = action.payload
+        },
+        setSelectedUser: (state, action) => {
+            state.selectedUser = action.payload.user
+        },
+        removeUser: (state,action)=>{
+         state.users = state.users.filter(user=> user._id !== action.payload.user_id)
+        },
+        unSetSelectedUser: (state) => {
+            state.selectedUser = ""
         },
         setRegions: (state, action) => {
             state.regions = action.payload
@@ -48,11 +96,32 @@ const profileSlice = createSlice({
             state.routes = state.routes.filter(route => route._id !== action.payload)
         }
 
+    },
+    extraReducers: (builder) => {
+        builder.addCase(fetchTickets.fulfilled, (state, action) => {
+            state.tickets = action.payload.tickets
+            state.ticketsCount = action.payload.count
+        })
+        builder.addCase(fetchTickets.rejected, (state, action) => {
+            state.tickets = []
+            state.ticketsCount = 0
+        })
+
+        builder.addCase(fetchDashboardDetails.fulfilled, (state, action) => {
+            state.dashboardCounts = action.payload.dashboardCounts
+            state.tickets = action.payload.todayTickets
+        })
+
+        builder.addCase(fetchDashboardDetails.rejected, (state, action) => {
+            state.dashboardCounts = {}
+
+        })
+
     }
 })
 
 
-export const { addBus, addUsers, addRegion, updateRegion, removeRegion, setRegions, addRoute, updateRoute, removeRoute, setRoutes } = profileSlice.actions
+export const { addBus, addFetchedBuses, addUsers, setSelectedUser, unSetSelectedUser,removeUser, addRegion, updateRegion, removeRegion, setRegions, addRoute, updateRoute, removeRoute, setRoutes } = profileSlice.actions
 
 
 //users action creators...................................................
@@ -89,6 +158,17 @@ export const searchUser = (searchKey) => async (dispatch, getState) => {
     } catch (error) {
         console.log("sometn went wrong")
     }
+
+}
+
+export const deleteUser = (user_id) => async (dispatch) => {
+
+        const rs = await secureApi.delete(`/admin/user/${user_id}`);
+    
+        if (rs.statusText === "OK") {
+            dispatch(removeUser({user_id}))
+        }
+
 
 }
 
@@ -170,16 +250,16 @@ export const deleteRegion = (region) => async (dispatch, getState) => {
 export const fetchRoutes = () => async (dispatch, getState) => {
     try {
 
-     
+
         const rs = await publicApi.get("/admin/routes");
         const rsData = rs.data;
-      
+
         if (rs.status === 200) {
             dispatch(setRoutes(rsData.routes))
         }
 
     } catch (error) {
-       
+
         console.log("something went wrong")
     }
 }
@@ -187,7 +267,7 @@ export const fetchRoutes = () => async (dispatch, getState) => {
 //fetch region routes.....
 export const fetchRegionRoutes = (from) => async (dispatch, getState) => {
     try {
- 
+
 
         const rs = await publicApi.get(`/admin/routes?from=${from}`);
         const rsData = rs.data;
@@ -207,15 +287,15 @@ export const registerRoute = (routeInfo) => async (dispatch, getState) => {
 
         dispatch(activateLoading())
         const rs = await publicApi.post(`/admin/routes`, routeInfo);
-        
+
         if (rs.status === 201) {
             dispatch(addRoute(rs.data.route))
         }
         dispatch(deActivateLoading())
         dispatch(activateFeedback({ status: "success", message: "You have added a new route successfully" }))
-        
+
     } catch (error) {
-        
+
         const error_message = error.response ? error.response.data.message : error.message
         dispatch(activateFeedback({ status: "error", message: error_message }))
         dispatch(deActivateLoading())
@@ -225,19 +305,19 @@ export const registerRoute = (routeInfo) => async (dispatch, getState) => {
 
 export const editRoute = (routeInfo) => async (dispatch, getState) => {
     try {
-        
-      
+
+
         const rs = await publicApi.patch(`/admin/route/${routeInfo.route_id}`, routeInfo.updatedRoute);
-        
+
         if (rs.status === 200) {
             dispatch(updateRoute(routeInfo))
         }
-        
-        
+
+
     } catch (error) {
         const error_message = error.response ? error.response.data.message : error.message
         dispatch(activateFeedback({ status: "error", message: error_message }))
-       
+
 
         console.log(error_message)
     }
@@ -245,24 +325,91 @@ export const editRoute = (routeInfo) => async (dispatch, getState) => {
 
 export const deleteRoute = (routeId) => async (dispatch, getState) => {
     try {
-        
-       
+
+
         const rs = await publicApi.delete(`/admin/route/${routeId}`);
-        
+
         if (rs.status === 200) {
             dispatch(removeRoute(routeId))
         }
-      
-        
+
+
     } catch (error) {
         const error_message = error.response ? error.response.data.message : error.message
         dispatch(activateFeedback({ status: "error", message: error_message }))
-        
+
         console.log(error_message)
     }
 }
 
-//end of region action creators...................................................
+
+//bus action creators.......................................................... 
+export const registerBus = (busInfo) => async (dispatch, getState) => {
+
+    const rs = await secureApi.post('/admin/register_bus', busInfo)
+    const rsData = rs.data
+    dispatch(addBus(rsData.new_bus))
+
+}
+
+export const fetchBuses = () => async (dispatch, getState) => {
+    try {
+        const rs = await secureApi.get('/admin/buses')
+        const rsData = rs.data
+        dispatch(addFetchedBuses(rsData.buses))
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const updateBus = (data) => async (dispatch, getState) => {
+    let { profile: { buses } } = getState()
+    console.log("bus_picture", data.bus_picture)
+
+    if (data.bus_picture) {
+        console.log("bus_picture provided")
+        //if bus_picture...we are just updating bus pic field locally
+        buses = buses.map(bus => {
+            if (bus._id === data.busId) return { ...bus, busPicture: data.bus_picture }
+            return bus
+        })
+
+    } else {
+        console.log("bus_picture not provided")
+
+        const rs = await secureApi.patch(`/admin/bus/update/${data.busId}`, data.busInfo)
+        const rsData = rs.data
+        buses = buses.map(bus => {
+            if (bus._id === data.busId) return rsData.bus
+            return bus
+        })
+
+    }
+    dispatch(addFetchedBuses(buses))
+
+}
+
+export const deleteBus = (busId) => async (dispatch, getState) => {
+    let { profile: { buses } } = getState()
+
+    const rs = await secureApi.delete(`/admin/bus/delete/${busId}`)
+    if (rs.statusText !== "OK") {
+
+        dispatch(
+            activateFeedback({
+                status: "error",
+                message: "Something went wrong ..couldn't delete a buss",
+            })
+        );
+        return;
+    }
+    buses = buses.filter(bus => bus._id !== busId
+    )
+    dispatch(addFetchedBuses(buses))
+
+}
+
 
 
 export default profileSlice.reducer

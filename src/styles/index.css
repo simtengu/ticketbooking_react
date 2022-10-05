@@ -148,7 +148,11 @@ code {
   list-style-type: none;
 }
 
-.admin-link:hover, :focus {
+.admin-link:hover {
+  background-color: #29b7c2;
+}
+
+.admin-link:focus {
   background-color: #29b7c2;
 }
 
@@ -175,6 +179,19 @@ code {
   background: linear-gradient(#1a8e96, #84dae1);
   background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+.about-us-hero {
+  background-image: url("https://res.cloudinary.com/simtengu/image/upload/v1664827578/pxbus1_qob7bq.jpg");
+  background-position: center;
+  background-size: cover;
+}
+
+.out-timetable {
+  background-image: url("https://res.cloudinary.com/simtengu/image/upload/v1664827660/pxbus2_krlzhj.jpg");
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
 }
 
 .text-primary {
@@ -207,6 +224,10 @@ code {
 
 .bg-secondary {
   background-color: #f0db4e !important;
+}
+
+.bg-secondary-trsp {
+  background-color: rgba(240, 219, 78, 0.9) !important;
 }
 
 .text-dark-secondary {
@@ -256,5 +277,9 @@ code {
   top: 0px;
   left: 0px;
   z-index: 110;
+}
+
+#regions_list ul li h6 {
+  font-size: 18px;
 }
 /*# sourceMappingURL=index.css.map */

@@ -3,9 +3,11 @@ import {
   Box,
   Button,
   Divider,
+  Grid,
   IconButton,
   InputBase,
   Paper,
+  Skeleton,
   Stack,
   Table,
   TableBody,
@@ -16,29 +18,32 @@ import {
   Typography,
 } from "@mui/material";
 
-import { RemoveRedEye, Search } from "@mui/icons-material";
+import { Delete, RemoveRedEye, Search } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import FeedbackMessage from "../../components/utils/FeedbackMessage";
-import LoadingSpinner from "../../components/utils/LoadingSpinner";
-import { fetchUsers, searchUser } from "../../store/features/profile";
-import Modal from "../../components/utils/Modal";
-import { openModal } from "../../store/features/errorAndFeedback";
-import UserDetails from "../../components/admin/UserDetails";
+import {
+  deleteUser,
+  fetchUsers,
+  searchUser,
+  setSelectedUser,
+} from "../../store/features/profile";
 import spinner from "../../assets/spinner.gif";
+import ringsLoader from "../../assets/doublering.gif";
+import { useNavigate } from "react-router-dom";
+import Row from "../../components/utils/Row";
+import {
+  activateFeedback,
+  deActivateFeedback,
+} from "../../store/features/errorAndFeedback";
+import ConfirmationModal from "../../components/utils/ConfirmationModal";
 const Users = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const {
-    feedback: { isLoading, isModalOpen },
+    feedback: { isLoading },
     profile: { users },
   } = useSelector((state) => state);
-  const [selected_user, setSelectedUser] = useState("");
   const [isSearchingUser, setIsSearchingUser] = useState(false);
-
-  const handleOpenModal = (user_id) => {
-    const user = users.find((user) => user._id === user_id);
-    setSelectedUser(user);
-    dispatch(openModal());
-  };
 
   const handleSearchUser = async (searchValue) => {
     if (searchValue.trim().length > 0) {
@@ -47,21 +52,87 @@ const Users = () => {
       setIsSearchingUser(false);
     }
   };
+  //delete user ...............................
+  const [isConfirmUserDeleteOpen, setIsConfirmUserDeleteOpen] = useState(false);
+  const [userToDeleteId, setUserToDeleteId] = useState("");
+  const [isDeletingUser, setIsDeletingUser] = useState(false);
+  const handleDeleteUser = async () => {
+    setIsConfirmUserDeleteOpen(false);
+    try {
+      setIsDeletingUser(true);
+      await dispatch(deleteUser(userToDeleteId));
+      setIsDeletingUser(false);
+      setUserToDeleteId("");
+      dispatch(
+        activateFeedback({
+          status: "success",
+          message: "user deleted successfully",
+        })
+      );
+    } catch (error) {
+      const error_message = error.response
+        ? error.response.data.message
+        : error.message;
+      dispatch(activateFeedback({ status: "error", message: error_message }));
+      setUserToDeleteId("");
+      setIsDeletingUser(false);
+    }
+  };
   useEffect(() => {
     dispatch(fetchUsers());
+    return () => {
+      dispatch(deActivateFeedback());
+    };
   }, []);
 
   if (isLoading) {
-    return <LoadingSpinner />;
+    return (
+      <Box sx={{ mt: 4 }}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={4}>
+            <Skeleton variant="rectangular" />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Skeleton variant="rectangular" />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Skeleton variant="rectangular" />
+          </Grid>{" "}
+          <Grid item xs={12} sx={{ mt: 1 }}>
+            <Skeleton sx={{ minHeight: { xs: 300 } }} variant="rectangular" />
+          </Grid>
+        </Grid>
+      </Box>
+    );
   }
   return (
     <>
-      {isModalOpen && (
-        <Modal columnSize={{ md: 7, lg: 7 }} contentAlignment="flex-start">
-          <UserDetails user={selected_user} />
-        </Modal>
+      {isConfirmUserDeleteOpen && (
+        <ConfirmationModal
+          heading="Are you sure you want to delete this user"
+          middleParagraph=" proceed with deleting"
+          closeModal={() => setIsConfirmUserDeleteOpen(false)}
+          handleConfirmAction={handleDeleteUser}
+        />
       )}
 
+      {isDeletingUser && (
+        <Box
+          sx={{
+            width: "100vw",
+            height: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            position: "fixed",
+            top: "0px",
+            left: "0px",
+            zIndex: 100,
+          }}
+        >
+          <img width="70" src={ringsLoader} alt="loader" />
+        </Box>
+      )}
       <FeedbackMessage />
       <Box sx={{ mt: 2 }}>
         <Typography variant="h6" className="text-primary" sx={{ mb: 2 }}>
@@ -88,7 +159,7 @@ const Users = () => {
                 )}
               </Stack>
             </Box>
-            <Divider sx={{my:1.5,mx:1}} orientation="vertical" flexItem />
+            <Divider sx={{ my: 1.5, mx: 1 }} orientation="vertical" flexItem />
             <Button
               className="text-primary"
               variant="text"
@@ -143,13 +214,26 @@ const Users = () => {
                         <TableCell align="left">{user.phone}</TableCell>
                         <TableCell align="left">{user.gender}</TableCell>
                         <TableCell align="left">
-                          {" "}
-                          <IconButton
-                            onClick={() => handleOpenModal(user._id)}
-                            color="primary"
-                          >
-                            <RemoveRedEye />{" "}
-                          </IconButton>{" "}
+                          <Row>
+                            <IconButton
+                              onClick={() => {
+                                dispatch(setSelectedUser({ user }));
+                                navigate("/admin/user/account");
+                              }}
+                              color="primary"
+                            >
+                              <RemoveRedEye />
+                            </IconButton>
+                            <IconButton
+                              onClick={() => {
+                                setUserToDeleteId(user._id);
+                                setIsConfirmUserDeleteOpen(true);
+                              }}
+                              color="error"
+                            >
+                              <Delete />
+                            </IconButton>
+                          </Row>
                         </TableCell>
                       </TableRow>
                     );

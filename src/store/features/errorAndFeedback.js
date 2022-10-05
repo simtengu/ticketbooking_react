@@ -9,7 +9,8 @@ const initialState = {
         message: "",
     },
     isLoading: false,
-    isModalOpen:false
+    isModalOpen:false,
+    isAdminLeftBarOpen: false
 };
 const feedBackSlice = createSlice({
     name: "feedback",
@@ -33,11 +34,17 @@ const feedBackSlice = createSlice({
         },
         closeModal: (state)=>{
             state.isModalOpen = false
+        },
+        openAdminLeftBar: (state) => {
+            state.isAdminLeftBarOpen = true
+        },
+        closeAdminLeftBar: (state) => {
+            state.isAdminLeftBarOpen = false
         }
     }
 
 })
 
-export const{openModal,closeModal, activateFeedback,deActivateFeedback,activateLoading,deActivateLoading} = feedBackSlice.actions;
+export const{openAdminLeftBar,closeAdminLeftBar, openModal,closeModal, activateFeedback,deActivateFeedback,activateLoading,deActivateLoading} = feedBackSlice.actions;
 
 export default feedBackSlice.reducer

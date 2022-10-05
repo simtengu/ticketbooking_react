@@ -12,7 +12,7 @@ const AuthRoutes = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const location = useLocation();
-    const path = location.state.from || "/";
+    const path = location.state ?  location.state.from : "/";
   const [loading, setLoading] = useState(authUser.email ? false : true);
 
   useEffect(() => {

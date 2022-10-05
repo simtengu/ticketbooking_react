@@ -11,10 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import payment from "../assets/payment.png";
-import paypal from "../assets/paypal.png";
 import pypl from "../assets/pypl.JPG";
-import strp from "../assets/strp.png";
-import stripe from "../assets/stripe.png";
 import { Payments } from "@mui/icons-material";
 import Row from "../components/utils/Row";
 import { useNavigate } from "react-router-dom";
@@ -26,6 +23,7 @@ import {
   deActivateFeedback,
 } from "../store/features/errorAndFeedback";
 import ConfirmationModal from "../components/utils/ConfirmationModal";
+import { responsiveness as rsp } from "../styles/responsiveness";
 const MakePayment = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -96,8 +94,11 @@ const MakePayment = () => {
             <Paper sx={{ borderRadius: 3, p: 3 }}>
               <center>
                 <Typography
-                  variant="h3"
-                  sx={{ fontWeight: "bold" }}
+                  variant="h1"
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: { xs: "2.3rem", md: "2.7rem" },
+                  }}
                   className="signupText"
                 >
                   Make Payment
@@ -165,6 +166,9 @@ const MakePayment = () => {
                         </Paper>
                       </Button>
                       <Button
+                        onClick={() =>
+                          window.alert("WE ARE STILL WORKING ON THIS PART")
+                        }
                         sx={{
                           mb: 0.5,
                           "&:hover": { backgroundColor: "#64c0c8" },
@@ -181,6 +185,9 @@ const MakePayment = () => {
                         </Paper>
                       </Button>
                       <Button
+                        onClick={() =>
+                          window.alert("WE ARE STILL WORKING ON THIS PART")
+                        }
                         sx={{
                           textTransform: "lowercase",
                           "&:hover": { backgroundColor: "#64c0c8" },
@@ -205,7 +212,11 @@ const MakePayment = () => {
                   </Grid>
                   <Grid item xs={12} md={1}></Grid>
                   <Grid item xs={12} md={6}>
-                    <img src={payment} alt="paypal" style={{ width: "95%" }} />
+                    <img
+                      src="https://res.cloudinary.com/simtengu/image/upload/v1664827582/payment_ogfhkv.png"
+                      alt="paypal"
+                      style={{ width: "95%" }}
+                    />
                   </Grid>
                 </Grid>
               </Box>

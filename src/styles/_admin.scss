@@ -1,37 +1,38 @@
 .admin-link {
-    color: white;
-    text-decoration: none;
-    display: block;
-    padding: 10px;
-    &:hover {
-        color: #68d7df;
-    }
+  color: white;
+  text-decoration: none;
+  display: block;
+  padding: 10px;
+  &:hover {
+    color: #68d7df;
+  }
 }
 
 .admin-leftbar ul {
-    margin: 0px;
-    padding: 0px;
-    list-style-type: none;
-    li {
-    }
+  margin: 0px;
+  padding: 0px;
+  list-style-type: none;
 }
-.admin-link:hover,:focus {
-    background-color: #29b7c2;
+.admin-link:hover {
+  background-color: #29b7c2;
 }
+.admin-link:focus {
+  background-color: #29b7c2;
+}
+
 .dashboardItem {
-    background-color: #fff !important;
-}  
+  background-color: #fff !important;
+}
 
 .dashboardItem:hover {
-    background-color: #29b7c2 !important;
-    cursor: pointer;
- 
+  background-color: #29b7c2 !important;
+  cursor: pointer;
 }
-.dashboardItem:hover  .prg {
-color: #fff;
-cursor: pointer;
-    }
+.dashboardItem:hover .prg {
+  color: #fff;
+  cursor: pointer;
+}
 
-    .font-bold {
-        font-weight: bold;
-    }
+.font-bold {
+  font-weight: bold;
+}

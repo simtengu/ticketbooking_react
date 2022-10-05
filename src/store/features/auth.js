@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { publicApi } from "../../api";
+import { publicApi, secureApi } from "../../api";
 import { activateFeedback, activateLoading, deActivateLoading } from "./errorAndFeedback";
 
 export const loginAttempt = createAsyncThunk("auth/signin", async (userInfo, thunkApi) => {
@@ -18,16 +18,16 @@ export const loginAttempt = createAsyncThunk("auth/signin", async (userInfo, thu
 
 })
 
-export const logoutAttempt = createAsyncThunk("auth/signout", async (user,thunkApi)=>{
+export const logoutAttempt = createAsyncThunk("auth/signout", async (user, thunkApi) => {
 
     try {
         const rs = await publicApi.get("/logout")
         return rs.data
     } catch (error) {
-    
+
         return thunkApi.rejectWithValue("user logged out")
 
-    } 
+    }
 })
 
 const initialState = {
@@ -48,7 +48,7 @@ const authUserSlice = createSlice({
         builder.addCase(loginAttempt.rejected, (state, action) => {
             console.log("rejected action", action.payload)
         })
-        builder.addCase(logoutAttempt.pending,(state)=>{
+        builder.addCase(logoutAttempt.pending, (state) => {
             state.user = {}
         })
         builder.addCase(logoutAttempt.fulfilled, (state) => {
@@ -69,15 +69,14 @@ export const registerNewUser = (userInfo) => async (dispatch, getState) => {
 
     let user_data = Object.entries(userInfo).filter(item => item[0] !== "confirm_password")
     user_data = Object.fromEntries(user_data)
-    console.log('userInfo', userInfo)
-    console.log('userdata', user_data)
+
     try {
         dispatch(activateLoading())
         const rs = await publicApi.post("/user/register", user_data);
         const userData = rs.data;
         if (rs.status === 201) {
             dispatch(setAuthUser(userData.user))
-            dispatch(activateFeedback({ status: "success", message: "Congratulations you have been successfully registered" }))
+
         }
         dispatch(deActivateLoading())
 
@@ -88,6 +87,16 @@ export const registerNewUser = (userInfo) => async (dispatch, getState) => {
     }
 
 
+}
+
+//update user................. 
+export const updateUser = (userInfo) => async (dispatch) => {
+    const rs = await secureApi.patch('/user/update', userInfo)
+    if (rs.statusText === "OK") {
+        let rsData = rs.data;
+        console.log("user", rsData.user)
+        dispatch(setAuthUser(rsData.user))
+    }
 }
 
 

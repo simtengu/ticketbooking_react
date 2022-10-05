@@ -1,31 +1,102 @@
-import { DoubleArrow, Download, Phone } from "@mui/icons-material";
+import { DoubleArrow, Download, Phone, SaveAs } from "@mui/icons-material";
 import {
   Box,
   Button,
   Container,
   Divider,
   Grid,
-  IconButton,
   Paper,
   Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, {useState } from "react";
 import Row from "../components/utils/Row";
 import no_result from "../assets/noresults.JPG";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { activateFeedback } from "../store/features/errorAndFeedback";
+import { publicApi } from "../api";
+import { saveAs } from "file-saver";
+import FeedbackMessage from "../components/utils/FeedbackMessage";
+import LoadingSpinner from "../components/utils/LoadingSpinner";
 
 const DownloadTicket = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { passengerBookedTickets } = useSelector((state) => state.booking);
+  const [generatedTickets, setGeneratedTickets] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const ticketGenerate = async (ticket) => {
+    try {
+      setLoading(true);
+      const rs = await publicApi.post("/postTicket", ticket);
+      setLoading(false);
+      if (rs.status === 201) {
+        setGeneratedTickets([...generatedTickets, ticket]);
+      }
+      dispatch(
+        activateFeedback({
+          status: "success",
+          message: "ticket pdf file was generated successfully",
+        })
+      );
+    } catch (error) {
+      setLoading(false);
+      const error_message = error.response
+        ? error.response.data.message
+        : error.message;
+      dispatch(
+        activateFeedback({
+          status: "error",
+          message: error_message,
+        })
+      );
+    }
+  };
+
+  const getPdf = async (ticket) => {
+    try {
+      setLoading(true);
+      const response = await publicApi.get(`/getpdf?ticketName=${ticket._id}`, {
+        responseType: "blob",
+      });
+      setLoading(false);
+      const pdfBlob = new Blob([response.data], {
+        type: "application/pdf",
+      });
+      saveAs(pdfBlob, `${ticket._id}.pdf`);
+      dispatch(
+        activateFeedback({
+          status: "success",
+          message: "pdf downloaded successfuly",
+        })
+      );
+    } catch (error) {
+      setLoading(false);
+      const error_message = error.response
+        ? error.response.data.message
+        : error.message;
+      console.log(error.response);
+      dispatch(
+        activateFeedback({
+          status: "error",
+          message: "Something went wrong try again later",
+        })
+      );
+    }
+  };
+
   return (
     <>
-      <Container sx={{ py: 2, minHeight: "60vh" }}>
+      <FeedbackMessage />
+      {loading && <LoadingSpinner />}
+
+      <Container sx={{ py: 7, minHeight: "60vh" }}>
         <Grid container justifyContent="center">
           <Grid item xs={11} md={10} lg={9}>
             <Paper sx={{ borderRadius: 3, p: 3 }}>
@@ -46,7 +117,7 @@ const DownloadTicket = () => {
                       <Box sx={{ mt: 3 }}>
                         {/* ticket container................................ */}
                         {passengerBookedTickets.map((ticket) => (
-                          <Box sx={{my:1}} key={ticket._id}>
+                          <Box sx={{ my: 1 }} key={ticket._id}>
                             <Grid container sx={{ mb: 1 }} spacing={1}>
                               <Grid item xs={12} sm={11} md={10} sx={{ p: 1 }}>
                                 <Box
@@ -167,7 +238,9 @@ const DownloadTicket = () => {
                                                 className="text-light"
                                               >
                                                 {ticket.from}{" "}
-                                                <span style={{ color: "#ffed6c" }}>
+                                                <span
+                                                  style={{ color: "#ffed6c" }}
+                                                >
                                                   to
                                                 </span>{" "}
                                                 {ticket.to}
@@ -255,16 +328,33 @@ const DownloadTicket = () => {
                                   justifyContent="center"
                                   alignItems="center"
                                 >
-                                  <Button
-                                    sx={{
-                                      boxShadow: "1px 1px 3px grey",
-                                      borderRadius: 3,
-                                      p: { xs: 2, md: 4 },
-                                      "&:hover": { bgcolor: "#ffde07" },
-                                    }}
-                                  >
-                                    <Download className="text-primary" />
-                                  </Button>
+                                  {generatedTickets.some(
+                                    (tkt) => tkt._id === ticket._id
+                                  ) ? (
+                                    <Button
+                                      sx={{
+                                        boxShadow: "1px 1px 3px grey",
+                                        borderRadius: 3,
+                                        p: { xs: 2, md: 4 },
+                                        "&:hover": { bgcolor: "#ffde07" },
+                                      }}
+                                      onClick={() => getPdf(ticket)}
+                                    >
+                                      <Download className="text-primary" />
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      className="text-primary"
+                                      sx={{
+                                        boxShadow: "1px 1px 3px grey",
+                                        borderRadius: 2,
+                                        "&:hover": { bgcolor: "#ffde07" },
+                                      }}
+                                      onClick={() => ticketGenerate(ticket)}
+                                    >
+                                      generate pdf
+                                    </Button>
+                                  )}
                                 </Stack>
                               </Grid>
                             </Grid>

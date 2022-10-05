@@ -1,6 +1,7 @@
 import React from 'react';
-import { Box, Button, Grid, Paper, Stack, Typography } from "@mui/material";
+import { Box, Button, Paper, Stack, Typography } from "@mui/material";
 import Row from './Row';
+import {motion} from "framer-motion"
 const ConfirmationModal = ({closeModal,heading,middleParagraph,handleConfirmAction}) => {
     return (
       <>
@@ -12,7 +13,7 @@ const ConfirmationModal = ({closeModal,heading,middleParagraph,handleConfirmActi
             height: "100vh",
             position: "fixed",
             left: "0px",
-            top: "0px",
+            top: "0px"
           }}
           onClick={closeModal}
         >
@@ -21,12 +22,14 @@ const ConfirmationModal = ({closeModal,heading,middleParagraph,handleConfirmActi
               width: "100%",
               height: "100%",
               justifyContent: "center",
-              alignItems: "center",
+              alignItems: "center"
             }}
           >
+            <motion.div initial={{opacity:0.4,y:-100}} animate={{opacity:1,y:0}}>
+
             <Paper
               elevation={22}
-              sx={{ display: "inline-block", p: 3, borderRadius: 3 }}
+              sx={{ display: "inline-block", p: 3, borderRadius: 3,mx:{xs:1.5,md:0} }}
               onClick={(e) => e.stopPropagation()}
             >
               <Typography
@@ -34,7 +37,7 @@ const ConfirmationModal = ({closeModal,heading,middleParagraph,handleConfirmActi
                 sx={{
                   fontWeight: "bold",
                   fontFamily: "calibri",
-                  fontSize: { xs: 22 },
+                  fontSize: { xs: 17,md:22},
                   color: "#3e3e3e",
                 }}
               >
@@ -46,10 +49,10 @@ const ConfirmationModal = ({closeModal,heading,middleParagraph,handleConfirmActi
                   fontWeight: "bold",
                   fontFamily: "calibri",
                   fontSize: { xs: 15 },
-                  color: "#aeaeae",
+                  color: "#7f7f7f",
                 }}
               >
-               {middleParagraph}
+                {middleParagraph}
               </Typography>
               <Row styles={{ marginTop: 1 }}>
                 <Paper sx={{ display: "inline-block" }}>
@@ -59,6 +62,7 @@ const ConfirmationModal = ({closeModal,heading,middleParagraph,handleConfirmActi
                       "&:hover": { color: "white", bgcolor: "#1976d2" },
                     }}
                     size="small"
+                 
                     onClick={handleConfirmAction}
                   >
                     ok
@@ -68,10 +72,11 @@ const ConfirmationModal = ({closeModal,heading,middleParagraph,handleConfirmActi
                   <Button
                     sx={{
                       fontWeight: "bold",
+                      color:"#e02f2f",
                       "&:hover": { color: "white", bgcolor: "#1976d2" },
                     }}
                     size="small"
-                    color="error"
+                    
                     onClick={closeModal}
                   >
                     cancel
@@ -79,6 +84,7 @@ const ConfirmationModal = ({closeModal,heading,middleParagraph,handleConfirmActi
                 </Paper>
               </Row>
             </Paper>
+            </motion.div>
           </Stack>
         </Box>
       </>

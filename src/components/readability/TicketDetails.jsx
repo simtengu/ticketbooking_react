@@ -22,6 +22,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -42,6 +43,8 @@ import {
   openModal,
 } from "../../store/features/errorAndFeedback";
 import Modal from "../utils/Modal";
+import { responsiveness as rsp } from "../../styles/responsiveness";
+
 const TicketDetails = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -61,14 +64,14 @@ const TicketDetails = () => {
   } = useSelector((state) => state);
   const initialDate = dptDate ? new Date(dptDate) : new Date();
   const [departingDate, setDepartingDate] = useState(initialDate);
-  const [today, setToday] = useState(new Date());
+  const today = new Date();
 
   const isBookingOpen = () => {
     let bookingTime = today.getTime();
     let dptDayTime = departingDate.getTime();
 
     let dptDate = parseInt(departingDate.getDate());
-    let dptMonth = parseInt(departingDate.getMonth()) - 1;
+    let dptMonth = parseInt(departingDate.getMonth());
     let dptYear = parseInt(departingDate.getFullYear());
 
     //for ticket booking on the same date to departing date............ (checking if time is up)
@@ -78,10 +81,12 @@ const TicketDetails = () => {
           ? new Date(dptYear, dptMonth, dptDate, 5, 30)
           : new Date(dptYear, dptMonth, dptDate, 7, 30);
 
-      dptExactTime = dptExactTime.getTime();
-      if (bookingTime > dptExactTime) return false;
+      let dptExactTimeInt = dptExactTime.getTime();
+
+      if (bookingTime > dptExactTimeInt) return false;
       return true;
     }
+
     //for ticket booking on different date to departing date............ (checking if time is up)
 
     if (bookingTime > dptDayTime) return false;
@@ -197,6 +202,7 @@ const TicketDetails = () => {
           mb: 0,
           textTransform: "capitalize",
           fontWeight: "bold",
+          fontSize: rsp.heading3,
         }}
       >
         View & Setup your journey
@@ -219,7 +225,7 @@ const TicketDetails = () => {
           }}
           gutterBottom
         >
-          Route Selected
+          Journey Route Selected
         </Typography>
         <table>
           <tbody>
@@ -251,7 +257,7 @@ const TicketDetails = () => {
           }}
           gutterBottom
         >
-          Departing Date & Time
+          Select Departing Date & Time
         </Typography>
 
         <Stack direction="column" spacing={1}>
@@ -339,6 +345,15 @@ const TicketDetails = () => {
               ? "It's time to select your seat(s)"
               : "Booking already closed for this day"}
           </Typography>
+          {!isBookingOpen() && (
+            <Typography
+              variant="body2"
+              className="text-dark"
+              sx={{ fontWeight: "bold" }}
+            >
+              {new Date(departingDate).toDateString()}
+            </Typography>
+          )}
         </center>
 
         <Grid container justifyContent="center">
@@ -445,128 +460,136 @@ const TicketDetails = () => {
                     columnSize={{ md: 4, lg: 4 }}
                     contentAlignment="flex-start"
                   >
-                    <Paper elevation={6} sx={{ p: 3, borderRadius: 4 }}>
-                      <Box py={2} px={1}>
-                        <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                          Selected seat number: {currentTicket.ticketNumber}
-                        </Typography>
-                        <Typography
-                          className="text-primary"
-                          variant="body1"
-                          sx={{
-                            textTransform: "capitalize",
-                            fontWeight: "bold",
-                            mt: 2,
-                          }}
-                          gutterBottom
-                        >
-                          Passenger's details
-                        </Typography>
-                        <Box sx={{ mt: 0.5 }}>
-                          {authUser.email && (
-                            <div>
-                              <Button
-                                variant="text"
-                                size="small"
-                                sx={{
-                                  fontWeight: "bold",
-                                  color: "#22929b",
-                                  mx: 0,
-                                  px: 0,
-                                }}
-                                onClick={handleUseAuthUserDetails}
-                              >
-                                Click here
-                              </Button>
-                              <span style={{ marginLeft: 3 }}>
-                                to use your own details for this seat.
-                              </span>
-                            </div>
-                          )}
+                    <motion.div
+                      animate={{ translateY: 0 }}
+                      initial={{ translateY: -67 }}
+                    >
+                      <Paper elevation={6} sx={{ p: 3, borderRadius: 4 }}>
+                        <Box py={2} px={1}>
+                          <Typography
+                            variant="body1"
+                            sx={{ fontWeight: "bold" }}
+                          >
+                            Selected seat number: {currentTicket.ticketNumber}
+                          </Typography>
+                          <Typography
+                            className="text-primary"
+                            variant="body1"
+                            sx={{
+                              textTransform: "capitalize",
+                              fontWeight: "bold",
+                              mt: 2,
+                            }}
+                            gutterBottom
+                          >
+                            Passenger's details
+                          </Typography>
+                          <Box sx={{ mt: 0.5 }}>
+                            {authUser.email && (
+                              <div>
+                                <Button
+                                  variant="text"
+                                  size="small"
+                                  sx={{
+                                    fontWeight: "bold",
+                                    color: "#22929b",
+                                    mx: 0,
+                                    px: 0,
+                                  }}
+                                  onClick={handleUseAuthUserDetails}
+                                >
+                                  Click here
+                                </Button>
+                                <span style={{ marginLeft: 3 }}>
+                                  to use your own details for this seat.
+                                </span>
+                              </div>
+                            )}
 
-                          <TextField
-                            label="First Name"
-                            variant="standard"
-                            value={currentTicket.firstName || ""}
-                            onChange={(e) =>
-                              setCurrentTicket({
-                                ...currentTicket,
-                                firstName: e.target.value,
-                              })
-                            }
-                          />
-                          <br></br>
-                          <TextField
-                            label="Last Name"
-                            variant="standard"
-                            value={currentTicket.lastName || ""}
-                            onChange={(e) =>
-                              setCurrentTicket({
-                                ...currentTicket,
-                                lastName: e.target.value,
-                              })
-                            }
-                          />
-                          <br></br>
-                          <FormControl sx={{ mt: 2 }}>
-                            <FormLabel id="demo-controlled-radio-buttons-group">
-                              Gender
-                            </FormLabel>
-                            <RadioGroup
-                              aria-labelledby="demo-controlled-radio-buttons-group"
-                              name="controlled-radio-buttons-group"
-                              value={currentTicket.gender}
+                            <TextField
+                              label="First Name"
+                              variant="standard"
+                              value={currentTicket.firstName || ""}
                               onChange={(e) =>
                                 setCurrentTicket({
                                   ...currentTicket,
-                                  gender: e.target.value,
+                                  firstName: e.target.value,
                                 })
                               }
-                            >
-                              <FormControlLabel
-                                value="female"
-                                control={<Radio sx={{ color: "#22929b" }} />}
-                                label="Female"
-                              />
-                              <FormControlLabel
-                                value="male"
-                                control={<Radio sx={{ color: "#22929b" }} />}
-                                label="Male"
-                              />
-                            </RadioGroup>
-                          </FormControl>
-                          <br></br>
-                          <TextField
-                            label="Phone Number"
-                            variant="standard"
-                            value={currentTicket.phone || ""}
-                            onChange={(e) =>
-                              setCurrentTicket({
-                                ...currentTicket,
-                                phone: e.target.value,
-                              })
-                            }
-                          />
-                          <Box mt={2}>
-                            <Button
-                              size="medium"
-                              variant="outlined"
-                              className="text-primary"
-                              sx={{
-                                borderRadius: 10,
-                                fontFamily: "roboto",
-                                color: "#158a93",
-                                fontWeight: "bold",
-                                textTransform: "capitalize",
-                              }}
-                              onClick={handleSavePassengerDetails}
-                            >
-                              save passenger's details
-                            </Button>
+                            />
+                            <br></br>
+                            <TextField
+                              label="Last Name"
+                              variant="standard"
+                              value={currentTicket.lastName || ""}
+                              onChange={(e) =>
+                                setCurrentTicket({
+                                  ...currentTicket,
+                                  lastName: e.target.value,
+                                })
+                              }
+                            />
+                            <br></br>
+                            <FormControl sx={{ mt: 2 }}>
+                              <FormLabel id="demo-controlled-radio-buttons-group">
+                                Gender
+                              </FormLabel>
+                              <RadioGroup
+                                aria-labelledby="demo-controlled-radio-buttons-group"
+                                name="controlled-radio-buttons-group"
+                                value={currentTicket.gender}
+                                onChange={(e) =>
+                                  setCurrentTicket({
+                                    ...currentTicket,
+                                    gender: e.target.value,
+                                  })
+                                }
+                              >
+                                <FormControlLabel
+                                  value="female"
+                                  control={<Radio sx={{ color: "#22929b" }} />}
+                                  label="Female"
+                                />
+                                <FormControlLabel
+                                  value="male"
+                                  control={<Radio sx={{ color: "#22929b" }} />}
+                                  label="Male"
+                                />
+                              </RadioGroup>
+                            </FormControl>
+                            <br></br>
+                            <TextField
+                              label="Phone Number"
+                              variant="standard"
+                              value={currentTicket.phone || ""}
+                              onChange={(e) =>
+                                setCurrentTicket({
+                                  ...currentTicket,
+                                  phone: e.target.value,
+                                })
+                              }
+                            />
+                            <Box mt={2}>
+                              <Button
+                                size="medium"
+                                variant="outlined"
+                                className="text-primary"
+                                sx={{
+                                  borderRadius: 10,
+                                  fontFamily: "roboto",
+                                  color: "#158a93",
+                                  fontWeight: "bold",
+                                  textTransform: "capitalize",
+                                }}
+                                onClick={handleSavePassengerDetails}
+                              >
+                                save passenger's details
+                              </Button>
+                            </Box>
                           </Box>
                         </Box>
-                      </Box>
-                    </Paper>
+                      </Paper>
+                    </motion.div>
                   </Modal>
                 )}
               </div>

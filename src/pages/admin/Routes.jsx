@@ -17,6 +17,7 @@ import {
   MenuItem,
   Paper,
   Select,
+  Skeleton,
   Stack,
   Table,
   TableBody,
@@ -295,7 +296,24 @@ const Routes = () => {
   }, [regions]);
 
   if (isLoading) {
-    return <LoadingSpinner />;
+    return (
+      <Box sx={{ mt: 4 }}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={5}>
+            <Skeleton
+              sx={{ minHeight: { xs: "60vh", borderRadius: 11 } }}
+              variant="rectangular"
+            />
+          </Grid>
+          <Grid item xs={12} md={7}>
+            <Skeleton
+              sx={{ minHeight: { xs: "60vh", borderRadius: 11 } }}
+              variant="rectangular"
+            />
+          </Grid>
+        </Grid>
+      </Box>
+    );
   }
 
   return (

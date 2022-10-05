@@ -20,6 +20,7 @@ code {
 @import "./_journeyDetails.scss";
 @import "./_admin.scss";
 @import "./_auth.scss";
+@import "./_aboutUs.scss";
 
 //end of imports.....................................
 
@@ -52,6 +53,10 @@ code {
 
 .bg-secondary {
   background-color: #f0db4e !important;
+}
+.bg-secondary-trsp {
+  background-color: rgba($color: #f0db4e, $alpha: 0.9) !important;
+  
 }
 .text-dark-secondary {
   color: #ecd21c !important;
@@ -92,6 +97,10 @@ code {
   top: 0px;
   left: 0px;
   z-index: 110;
+}
+
+#regions_list ul li h6 {
+  font-size: 18px;
 }
 
 //end of layout configs............................
