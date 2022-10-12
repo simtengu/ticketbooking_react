@@ -26,12 +26,7 @@ const UserAccount = () => {
   let auth_user = useAuth();
   let user = selectedUser || auth_user;
 
-  //redirecting  admin to dashboard................
-  useEffect(() => {
-    if (auth_user.role === 111) {
-      navigate("/admin/dashboard");
-    }
-  }, [auth_user]);
+
 
   useEffect(() => {
     return () => {

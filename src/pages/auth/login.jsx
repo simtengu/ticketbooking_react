@@ -36,7 +36,7 @@ const Login = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
+  // const location = useLocation();
 
   // if(location?.state?.from){
   //   path = location.state.from.pathname
