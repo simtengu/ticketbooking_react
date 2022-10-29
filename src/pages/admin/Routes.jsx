@@ -7,11 +7,8 @@ import {
   FormControl,
   FormControlLabel,
   FormGroup,
-  FormHelperText,
-  FormLabel,
   Grid,
   IconButton,
-  Input,
   InputBase,
   InputLabel,
   MenuItem,
@@ -47,7 +44,6 @@ import {
 } from "../../store/features/errorAndFeedback";
 import { useDispatch, useSelector } from "react-redux";
 import Modal from "../../components/utils/Modal";
-import LoadingSpinner from "../../components/utils/LoadingSpinner";
 import spinner from "../../assets/spinner.gif";
 import FeedbackMessage from "../../components/utils/FeedbackMessage";
 import { useReducer } from "react";
@@ -237,8 +233,8 @@ const Routes = () => {
   };
 
   //handle new journey route registration...............
+  const [isAddingRoute, setIsAddingRoute] = useState(false);
   const handleSaveRoute = async () => {
-    console.log("final jInfo", journeyInfo);
     if (
       journeyInfo.perDayRounds.length < 1 ||
       !journeyInfo.distance ||
@@ -256,10 +252,24 @@ const Routes = () => {
       return;
     }
 
-    await dispatch(registerRoute(journeyInfo));
-    jDispatch({ type: "resetRoute" });
-    setFirstRound(false);
-    setSecondRound(false);
+
+ try{
+   setIsAddingRoute(true);
+   await dispatch(registerRoute(journeyInfo));
+   setIsAddingRoute(false);
+   jDispatch({ type: "resetRoute" });
+   setFirstRound(false);
+   setSecondRound(false);
+   
+  } catch (error) {
+      setIsAddingRoute(false);
+
+        const error_message = error.response ? error.response.data.message : error.message
+        dispatch(activateFeedback({ status: "error", message: error_message }))
+       
+    }
+
+
   };
 
   const [updateRouteProperties, setUpdateRouteProperties] = useState({});
@@ -669,16 +679,25 @@ const Routes = () => {
                       </Row>
                     )}
                   </Box>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    sx={{ mt: 2, fontWeight: "bold" }}
-                    className="grd-to-bottom-right"
-                    onClick={handleSaveRoute}
-                    fullWidth
-                  >
-                    Save Route
-                  </Button>
+                  {isAddingRoute ?   (
+                    <Row>
+                      <img src={spinner} width="40" />
+                      <Typography variant="caption" className="text-primary">
+                        adding route.........
+                      </Typography>
+                    </Row>
+                  ) : (
+                    <Button
+                      variant="contained"
+                      size="small"
+                      sx={{ mt: 2, fontWeight: "bold" }}
+                      className="grd-to-bottom-right"
+                      onClick={handleSaveRoute}
+                      fullWidth
+                    >
+                      Save Route
+                    </Button>
+                  )}
                 </Box>
               </Paper>
             </Box>

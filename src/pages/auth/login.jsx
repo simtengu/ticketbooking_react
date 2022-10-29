@@ -115,7 +115,7 @@ const Login = () => {
                       <Row>
                         <Typography variant="caption">password:</Typography>
                         <Typography variant="caption" sx={{ ml: 0.5 }}>
-                          aosaos
+                          simtengu
                         </Typography>
                       </Row>
                     </Box>
@@ -123,7 +123,7 @@ const Login = () => {
                 </Box>
                 <Box sx={{ display: { xs: "none", md: "block" } }}>
                   <Typography variant="caption">
-                    Admin Info:- email: rabias@gmail.com, password: aosaos
+                    Admin Info:- email: rabias@gmail.com, password: simtengu
                   </Typography>
                 </Box>
                 <Box sx={{ mt: 2 }}>

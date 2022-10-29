@@ -283,24 +283,18 @@ export const fetchRegionRoutes = (from) => async (dispatch, getState) => {
 }
 
 export const registerRoute = (routeInfo) => async (dispatch, getState) => {
-    try {
+    
 
-        dispatch(activateLoading())
+       
         const rs = await publicApi.post(`/admin/routes`, routeInfo);
 
         if (rs.status === 201) {
             dispatch(addRoute(rs.data.route))
         }
-        dispatch(deActivateLoading())
+       
         dispatch(activateFeedback({ status: "success", message: "You have added a new route successfully" }))
 
-    } catch (error) {
 
-        const error_message = error.response ? error.response.data.message : error.message
-        dispatch(activateFeedback({ status: "error", message: error_message }))
-        dispatch(deActivateLoading())
-        console.log(error_message)
-    }
 }
 
 export const editRoute = (routeInfo) => async (dispatch, getState) => {
