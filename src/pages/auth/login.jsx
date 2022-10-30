@@ -4,23 +4,18 @@ import {
   Box,
   Button,
   FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
   Grid,
   Input,
   InputAdornment,
   InputLabel,
   Paper,
-  Radio,
-  RadioGroup,
-  Stack,
+
   TextField,
   Typography,
 } from "@mui/material";
 import { motion } from "framer-motion";
 import { useSelector, useDispatch } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import FeedbackMessage from "../../components/utils/FeedbackMessage";
 import LoadingSpinner from "../../components/utils/LoadingSpinner";
 import Row from "../../components/utils/Row";
@@ -30,8 +25,7 @@ import { responsiveness as rsp } from "../../styles/responsiveness";
 
 const Login = () => {
   const {
-    feedback: { isLoading },
-    auth: { user },
+    feedback: { isLoading }
   } = useSelector((state) => state);
 
   const dispatch = useDispatch();

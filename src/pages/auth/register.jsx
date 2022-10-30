@@ -1,11 +1,10 @@
-import React, { useEffect, useReducer, useRef, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { Lock } from "@mui/icons-material";
 import {
   Box,
   Button,
   FormControl,
   FormControlLabel,
-  FormGroup,
   FormHelperText,
   FormLabel,
   Grid,
@@ -143,7 +142,7 @@ const Register = () => {
     if (user.email) {
       navigate("/", { replace: true });
     }
-  }, [user]);
+  }, [user,navigate]);
 
   const registerVariant = {
     zoomIn: {
