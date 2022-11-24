@@ -241,7 +241,7 @@ const UpdateRouteForm = ({ routeId, firstRoundStatus, secondRoundStatus }) => {
           </Typography>
           {isUpdatingRoute && (
             <Row styles={{ marginTop: 1, marginBottom: 1 }}>
-              <img src={spinner} width="40" />
+              <img src={spinner} width="40" alt="ldr i" />
               <Typography variant="caption" className="text-primary">
                 Editing route......
               </Typography>
@@ -250,7 +250,7 @@ const UpdateRouteForm = ({ routeId, firstRoundStatus, secondRoundStatus }) => {
 
           {isDeletingRoute && (
             <Row styles={{ marginTop: 1, marginBottom: 1 }}>
-              <img src={spinner} width="40" />
+              <img src={spinner} alt="ldr" width="40" />
               <Typography variant="caption" className="text-primary">
                 deleting route.......
               </Typography>

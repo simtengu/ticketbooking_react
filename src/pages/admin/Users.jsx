@@ -151,7 +151,7 @@ const Users = () => {
                 />
 
                 {isSearchingUser ? (
-                  <img src={spinner} width="40" />
+                  <img src={spinner} alt="ldr" width="40" />
                 ) : (
                   <IconButton>
                     <Search color="primary" />

@@ -54,7 +54,7 @@ function App() {
     if (loading) {
       fetch_user();
     }
-  }, []);
+  }, [loading,dispatch]);
 
   useEffect(() => {
     window.scrollTo(0, 0);

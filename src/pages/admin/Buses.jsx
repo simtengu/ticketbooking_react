@@ -301,186 +301,192 @@ const Buses = () => {
       <Container>
         <Box my={1}>
           <Grid container>
-            {isAdmin &&  <Grid item xs={12} md={4}>
-              <Box id="addBus" sx={{ p: 2 }}>
-                <Paper sx={{ p: 2, borderRadius: 4 }}>
-                  <Typography
-                    variant="button"
-                    className="text-primary"
-                    sx={{ fontWeight: "bold", mt: 1 }}
-                    gutterBottom
-                  >
-                    {selectedBusId ? "Update Bus" : "Add New Bus"}
-                  </Typography>
-                  <Box mt={1}>
-                    <Box>
-                      <TextField
-                        id="standard"
-                        label="bus number/label"
-                        variant="standard"
-                        type="text"
-                        size="small"
-                        name="busNumber"
-                        sx={{ my: 1 }}
-                        fullWidth
-                        value={busInfo.busNumber}
-                        onChange={(e) =>
-                          setBusInfo({
-                            ...busInfo,
-                            [e.target.name]: e.target.value,
-                          })
-                        }
-                      />
-                    </Box>
-                    <Box>
-                      <TextField
-                        id="standard"
-                        label="number of seats"
-                        variant="standard"
-                        type="text"
-                        size="small"
-                        name="numberOfSeats"
-                        fullWidth
-                        sx={{ my: 1 }}
-                        value={busInfo.numberOfSeats}
-                        onChange={(e) =>
-                          setBusInfo({
-                            ...busInfo,
-                            [e.target.name]: e.target.value,
-                          })
-                        }
-                      />
-                    </Box>
-                    {routes && (
-                      <Box sx={{ mb: 1 }}>
-                        <FormControl
-                          variant="standard"
-                          sx={{ m: 1, minWidth: 120 }}
-                          fullWidth
-                        >
-                          <InputLabel id="demo-simple-select-standard-label">
-                            Bus Route
-                          </InputLabel>
-                          <Select
-                            value={busInfo.busRoute}
-                            onChange={(e) => {
-                              setBusInfo({
-                                ...busInfo,
-                                busRoute: e.target.value,
-                              });
-                            }}
-                            label="bus route"
-                          >
-                            {routes.map((route, index) => (
-                              <MenuItem
-                                key={index}
-                                value={`${route.from} to ${route.to}`}
-                              >{`${route.from} to ${route.to}`}</MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </Box>
-                    )}
-
-                    <Divider />
-
-                    {!busInfo.busPicture && (
+            {isAdmin && (
+              <Grid item xs={12} md={4}>
+                <Box id="addBus" sx={{ p: 2 }}>
+                  <Paper sx={{ p: 2, borderRadius: 4 }}>
+                    <Typography
+                      variant="button"
+                      className="text-primary"
+                      sx={{ fontWeight: "bold", mt: 1 }}
+                      gutterBottom
+                    >
+                      {selectedBusId ? "Update Bus" : "Add New Bus"}
+                    </Typography>
+                    <Box mt={1}>
                       <Box>
-                        <Typography sx={{ my: 1 }}>Add bus picture</Typography>
-
-                        <input
-                          type="file"
-                          id="selectPic"
-                          ref={pic_upload_input_ref}
-                          onChange={handlePictureSelection}
-                        />
-                      </Box>
-                    )}
-
-                    {busPictureInfo.tempLink && (
-                      <Box my={2}>
-                        <img
-                          style={{ width: "80%" }}
-                          src={busPictureInfo.tempLink}
-                          alt="temp link"
-                        />
-                      </Box>
-                    )}
-                    {busInfo.busPicture && (
-                      <Box
-                        my={2}
-                        sx={{
-                          width: "90%",
-                          borderRadius: 2,
-                          bgcolor: "#f0f0f4",
-                          p: 1,
-                        }}
-                      >
-                        <img
-                          style={{ width: "100%" }}
-                          src={busInfo.busPicture}
-                          alt="bus picture"
-                        />
-                        <Box mt={0.2}>
-                          {isDeletingImage ? (
-                            <img src={spinner} width="30" />
-                          ) : (
-                            <IconButton
-                              color="error"
-                              onClick={handleDeletePicture}
-                            >
-                              <Delete />
-                            </IconButton>
-                          )}
-                        </Box>
-                      </Box>
-                    )}
-
-                    {!busInfo.busPicture && (
-                      <Stack direction="row" alignItems="flex-end">
-                        <Button
-                          sx={{ mt: 1.6, fontWeight: "bold" }}
-                          startIcon={<UploadFile />}
+                        <TextField
+                          id="standard"
+                          label="bus number/label"
+                          variant="standard"
+                          type="text"
                           size="small"
-                          onClick={handleImageSubmit}
-                          {...(isUploadingImage ? { disabled: true } : {})}
+                          name="busNumber"
+                          sx={{ my: 1 }}
+                          fullWidth
+                          value={busInfo.busNumber}
+                          onChange={(e) =>
+                            setBusInfo({
+                              ...busInfo,
+                              [e.target.name]: e.target.value,
+                            })
+                          }
+                        />
+                      </Box>
+                      <Box>
+                        <TextField
+                          id="standard"
+                          label="number of seats"
+                          variant="standard"
+                          type="text"
+                          size="small"
+                          name="numberOfSeats"
+                          fullWidth
+                          sx={{ my: 1 }}
+                          value={busInfo.numberOfSeats}
+                          onChange={(e) =>
+                            setBusInfo({
+                              ...busInfo,
+                              [e.target.name]: e.target.value,
+                            })
+                          }
+                        />
+                      </Box>
+                      {routes && (
+                        <Box sx={{ mb: 1 }}>
+                          <FormControl
+                            variant="standard"
+                            sx={{ m: 1, minWidth: 120 }}
+                            fullWidth
+                          >
+                            <InputLabel id="demo-simple-select-standard-label">
+                              Bus Route
+                            </InputLabel>
+                            <Select
+                              value={busInfo.busRoute}
+                              onChange={(e) => {
+                                setBusInfo({
+                                  ...busInfo,
+                                  busRoute: e.target.value,
+                                });
+                              }}
+                              label="bus route"
+                            >
+                              {routes.map((route, index) => (
+                                <MenuItem
+                                  key={index}
+                                  value={`${route.from} to ${route.to}`}
+                                >{`${route.from} to ${route.to}`}</MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Box>
+                      )}
+
+                      <Divider />
+
+                      {!busInfo.busPicture && (
+                        <Box>
+                          <Typography sx={{ my: 1 }}>
+                            Add bus picture
+                          </Typography>
+
+                          <input
+                            type="file"
+                            id="selectPic"
+                            ref={pic_upload_input_ref}
+                            onChange={handlePictureSelection}
+                          />
+                        </Box>
+                      )}
+
+                      {busPictureInfo.tempLink && (
+                        <Box my={2}>
+                          <img
+                            style={{ width: "80%" }}
+                            src={busPictureInfo.tempLink}
+                            alt="temp link"
+                          />
+                        </Box>
+                      )}
+                      {busInfo.busPicture && (
+                        <Box
+                          my={2}
+                          sx={{
+                            width: "90%",
+                            borderRadius: 2,
+                            bgcolor: "#f0f0f4",
+                            p: 1,
+                          }}
                         >
-                          Upload Picture
-                        </Button>
-                        {isUploadingImage && <img src={spinner} width="30" />}
-                      </Stack>
+                          <img
+                            style={{ width: "100%" }}
+                            src={busInfo.busPicture}
+                            alt="bus picture"
+                          />
+                          <Box mt={0.2}>
+                            {isDeletingImage ? (
+                              <img src={spinner} alt="ldr" width="30" />
+                            ) : (
+                              <IconButton
+                                color="error"
+                                onClick={handleDeletePicture}
+                              >
+                                <Delete />
+                              </IconButton>
+                            )}
+                          </Box>
+                        </Box>
+                      )}
+
+                      {!busInfo.busPicture && (
+                        <Stack direction="row" alignItems="flex-end">
+                          <Button
+                            sx={{ mt: 1.6, fontWeight: "bold" }}
+                            startIcon={<UploadFile />}
+                            size="small"
+                            onClick={handleImageSubmit}
+                            {...(isUploadingImage ? { disabled: true } : {})}
+                          >
+                            Upload Picture
+                          </Button>
+                          {isUploadingImage && (
+                            <img src={spinner} alt="ldr q" width="30" />
+                          )}
+                        </Stack>
+                      )}
+                    </Box>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      sx={{ mt: 2, fontWeight: "bold" }}
+                      className="grd-to-bottom-right"
+                      fullWidth
+                      onClick={handleBusSubmit}
+                    >
+                      {selectedBusId ? "Update" : "Save"}
+                    </Button>
+                    {selectedBusId && (
+                      <Row styles={{ mt: 1 }}>
+                        <Typography sx={{ color: "grey" }}>go to</Typography>{" "}
+                        <Button
+                          onClick={() => {
+                            setBusInfo(initialBusInfo);
+                            setSelectedBusId("");
+                            window.scrollTo(0, 0);
+                          }}
+                          sx={{ fontWeight: "bold" }}
+                        >
+                          Add Bus
+                        </Button>{" "}
+                        <Typography sx={{ color: "grey" }}>instead</Typography>
+                      </Row>
                     )}
-                  </Box>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    sx={{ mt: 2, fontWeight: "bold" }}
-                    className="grd-to-bottom-right"
-                    fullWidth
-                    onClick={handleBusSubmit}
-                  >
-                    {selectedBusId ? "Update" : "Save"}
-                  </Button>
-                  {selectedBusId && (
-                    <Row styles={{ mt: 1 }}>
-                      <Typography sx={{ color: "grey" }}>go to</Typography>{" "}
-                      <Button
-                        onClick={() => {
-                          setBusInfo(initialBusInfo);
-                          setSelectedBusId("");
-                          window.scrollTo(0, 0);
-                        }}
-                        sx={{ fontWeight: "bold" }}
-                      >
-                        Add Bus
-                      </Button>{" "}
-                      <Typography sx={{ color: "grey" }}>instead</Typography>
-                    </Row>
-                  )}
-                </Paper>
-              </Box>
-            </Grid>}
-           
+                  </Paper>
+                </Box>
+              </Grid>
+            )}
+
             <Grid item xs={12} md={8}>
               <Box sx={{ p: 2 }}>
                 <Paper sx={{ p: 2, borderRadius: 4 }}>

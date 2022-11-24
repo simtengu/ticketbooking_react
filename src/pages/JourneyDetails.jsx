@@ -31,7 +31,7 @@ import { KeyboardDoubleArrowRightSharp } from "@mui/icons-material";
 
 const JourneyDetails = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const params = useParams();
   //state management...............................................
   const {
@@ -198,7 +198,9 @@ const JourneyDetails = () => {
                     {loading && <MainBodySkeleton />}
                     {!loading && routeInfo ? (
                       <TicketDetails />
-                    ) : (
+                    ) : "" }
+                    
+                      {!loading && !routeInfo  ? (
                       <Stack
                         sx={{ minHeight: "200px" }}
                         alignItems="center"
@@ -215,7 +217,7 @@ const JourneyDetails = () => {
                           </Typography>
                         </center>
                       </Stack>
-                    )}
+                    ) : "" }
                   </Box>
                 </Grid>
               </Grid>

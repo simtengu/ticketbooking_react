@@ -1,15 +1,15 @@
 import axios from "axios"
 
 let publicApi = axios.create({
-    // baseURL:"https://simtenguticketbooking.cyclic.app/api",
-    baseURL: "http://localhost:5000/api",
+    // baseURL: "http://localhost:5000/api",
+    baseURL: "https://simtenguticketbooking.cyclic.app/api",
     withCredentials: true
 })
 
 let secureApi = axios.create({
-    // baseURL: "https://simtenguticketbooking.cyclic.app/api",
-    baseURL: "http://localhost:5000/api",
+    // baseURL: "http://localhost:5000/api",
+    baseURL: "https://simtenguticketbooking.cyclic.app/api",
     withCredentials: true
 })
 
-export {publicApi,secureApi}
+export { publicApi, secureApi }

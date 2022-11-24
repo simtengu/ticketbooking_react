@@ -235,6 +235,7 @@ const Routes = () => {
   //handle new journey route registration...............
   const [isAddingRoute, setIsAddingRoute] = useState(false);
   const handleSaveRoute = async () => {
+    //simple inputs validation.......................
     if (
       journeyInfo.perDayRounds.length < 1 ||
       !journeyInfo.distance ||
@@ -251,7 +252,7 @@ const Routes = () => {
 
       return;
     }
-
+//everything is okay ..saving a route..................
 
  try{
    setIsAddingRoute(true);
@@ -354,7 +355,7 @@ const Routes = () => {
                   </Typography>
                   {isUpdatingRegion.status && (
                     <Row>
-                      <img src={spinner} width="40" />
+                      <img src={spinner} width="40" alt="ldr" />
                       <Typography variant="caption" className="text-primary">
                         {isUpdatingRegion.message}
                       </Typography>
@@ -428,7 +429,7 @@ const Routes = () => {
                       />
 
                       {isAddingRegion ? (
-                        <img src={spinner} width="40" />
+                        <img src={spinner} width="40" alt="ldr 1" />
                       ) : (
                         <IconButton onClick={handleSubmitRegion}>
                           <Add
@@ -679,9 +680,9 @@ const Routes = () => {
                       </Row>
                     )}
                   </Box>
-                  {isAddingRoute ?   (
+                  {isAddingRoute ? (
                     <Row>
-                      <img src={spinner} width="40" />
+                      <img src={spinner} width="40" alt="ldr 2" />
                       <Typography variant="caption" className="text-primary">
                         adding route.........
                       </Typography>
@@ -776,7 +777,9 @@ const Routes = () => {
                             {routes.length}
                           </span>
                         </Typography>
-                        {isFetchingRoutes && <img src={spinner} width="40" />}
+                        {isFetchingRoutes && (
+                          <img src={spinner} width="40" alt="ldr 5" />
+                        )}
                       </Row>
                       <TableContainer component={Box}>
                         <Table aria-label="today's tickets">

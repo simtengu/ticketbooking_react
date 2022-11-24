@@ -265,9 +265,8 @@ export const fetchRoutes = () => async (dispatch, getState) => {
 }
 
 //fetch region routes.....
-export const fetchRegionRoutes = (from) => async (dispatch, getState) => {
+export const fetchRegionRoutes = (from) => async (dispatch) => {
     try {
-
 
         const rs = await publicApi.get(`/admin/routes?from=${from}`);
         const rsData = rs.data;
@@ -282,10 +281,8 @@ export const fetchRegionRoutes = (from) => async (dispatch, getState) => {
     }
 }
 
-export const registerRoute = (routeInfo) => async (dispatch, getState) => {
+export const registerRoute = (routeInfo) => async (dispatch) => {
     
-
-       
         const rs = await publicApi.post(`/admin/routes`, routeInfo);
 
         if (rs.status === 201) {
@@ -294,10 +291,9 @@ export const registerRoute = (routeInfo) => async (dispatch, getState) => {
        
         dispatch(activateFeedback({ status: "success", message: "You have added a new route successfully" }))
 
-
 }
 
-export const editRoute = (routeInfo) => async (dispatch, getState) => {
+export const editRoute = (routeInfo) => async (dispatch) => {
     try {
 
 
@@ -317,7 +313,7 @@ export const editRoute = (routeInfo) => async (dispatch, getState) => {
     }
 }
 
-export const deleteRoute = (routeId) => async (dispatch, getState) => {
+export const deleteRoute = (routeId) => async (dispatch) => {
     try {
 
 
@@ -338,7 +334,7 @@ export const deleteRoute = (routeId) => async (dispatch, getState) => {
 
 
 //bus action creators.......................................................... 
-export const registerBus = (busInfo) => async (dispatch, getState) => {
+export const registerBus = (busInfo) => async (dispatch) => {
 
     const rs = await secureApi.post('/admin/register_bus', busInfo)
     const rsData = rs.data
@@ -346,7 +342,7 @@ export const registerBus = (busInfo) => async (dispatch, getState) => {
 
 }
 
-export const fetchBuses = () => async (dispatch, getState) => {
+export const fetchBuses = () => async (dispatch) => {
     try {
         const rs = await secureApi.get('/admin/buses')
         const rsData = rs.data
