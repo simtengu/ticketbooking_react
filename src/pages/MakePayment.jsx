@@ -10,7 +10,6 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import payment from "../assets/payment.png";
 import pypl from "../assets/pypl.JPG";
 import { Payments } from "@mui/icons-material";
 import Row from "../components/utils/Row";
@@ -20,23 +19,28 @@ import { bookingTicket } from "../store/features/ticketbooking";
 import FeedbackMessage from "../components/utils/FeedbackMessage";
 import {
   activateFeedback,
+  activateLoading,
   deActivateFeedback,
+  deActivateLoading,
 } from "../store/features/errorAndFeedback";
 import ConfirmationModal from "../components/utils/ConfirmationModal";
-import { responsiveness as rsp } from "../styles/responsiveness";
+import LoadingSpinner from "../components/utils/LoadingSpinner";
 const MakePayment = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { selectedTickets } = useSelector((state) => state.booking);
+  const { booking:{selectedTickets},feedback:{isLoading} } = useSelector((state) => state);
   const [isPaymentDone, setIsPaymentDone] = useState(false);
   const [isConfirmPaymentOpen, setIsConfirmPaymentOpen] = useState(false);
 
   const handleAcceptMakePayment = async () => {
     setIsConfirmPaymentOpen(false);
     try {
+      dispatch(activateLoading())
       await dispatch(bookingTicket());
+      dispatch(deActivateLoading())
       setIsPaymentDone(true);
     } catch (error) {
+      dispatch(deActivateLoading())
       const error_message = error.response
         ? error.response.data.message
         : error.message;
@@ -87,6 +91,9 @@ const MakePayment = () => {
           handleConfirmAction={handleAcceptMakePayment}
         />
       )}
+
+{isLoading && <LoadingSpinner />}
+      
       <FeedbackMessage />
       <Container sx={{ py: 10, minHeight: "60vh" }}>
         <Grid container justifyContent="center">

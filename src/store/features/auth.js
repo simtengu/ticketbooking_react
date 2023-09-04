@@ -3,6 +3,7 @@ import { publicApi, secureApi } from "../../api";
 import { activateFeedback, activateLoading, deActivateLoading } from "./errorAndFeedback";
 
 export const loginAttempt = createAsyncThunk("auth/signin", async (userInfo, thunkApi) => {
+    
     try {
         thunkApi.dispatch(activateLoading())
         const rs = await publicApi.post("/user/login", userInfo)
@@ -76,7 +77,12 @@ export const registerNewUser = (userInfo) => async (dispatch, getState) => {
         const userData = rs.data;
         if (rs.status === 201) {
             dispatch(setAuthUser(userData.user))
-
+            dispatch(
+                activateFeedback({
+                  status: "success",
+                  message: `You have been successfully registered..Welcome..${user_data.firstName}.`,
+                })
+              );
         }
         dispatch(deActivateLoading())
 

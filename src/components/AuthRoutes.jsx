@@ -18,8 +18,8 @@ const AuthRoutes = () => {
     const fetch_user = async () => {
       try {
         const rs = await publicApi.get("/getAuthUser");
-        const userData = rs.data;
         if (rs.status === 200) {
+          const userData = rs.data;
           dispatch(setAuthUser(userData.user));
         }
 

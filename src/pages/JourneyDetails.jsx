@@ -3,8 +3,6 @@ import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
-  Container,
-  Divider,
   Grid,
   MenuItem,
   Paper,
@@ -13,9 +11,8 @@ import {
   Typography,
 } from "@mui/material";
 
-import bus from "../assets/bus3.gif";
 import no_result from "../assets/noresults.JPG";
-import { useNavigate, useParams } from "react-router-dom";
+import {useParams } from "react-router-dom";
 
 import { useSelector, useDispatch } from "react-redux";
 import {

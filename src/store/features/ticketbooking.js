@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { publicApi } from "../../api";
 
-
 export const fetchRouteAndTakenTickets = createAsyncThunk("ticketbooking/fetchRoute", async (routeInfo, thunkApi) => {
 
     const { fromRegion, toRegion } = routeInfo
@@ -136,7 +135,7 @@ const ticketBookingSlice = createSlice({
 export const { setFrom, setTo, setBusType, setRound, updateDepartingDate, setTakenTickets, updateSelectedTickets, setBookedTickets } = ticketBookingSlice.actions
 
 
-export const bookingTicket = () => async (dispatch, getState) => {
+export const  bookingTicket = () => async (dispatch, getState) => {
 
     const { booking } = getState();
     let {
@@ -154,7 +153,9 @@ export const bookingTicket = () => async (dispatch, getState) => {
     })
 
     const data = { tickets: selectedTickets }
+    
     const rs = await publicApi.post("/tickets", data);
+ 
     const rsData = rs.data;
     if (rs.status === 201) {
         const bookedTickets = rsData.tickets;

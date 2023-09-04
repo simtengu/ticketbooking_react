@@ -20,6 +20,7 @@ import { setRegions } from "../store/features/profile";
 import { setFrom, setTo } from "../store/features/ticketbooking";
 import LoadingSpinner from "./utils/LoadingSpinner";
 import { responsiveness as rsp } from "../styles/responsiveness";
+import FeedbackMessage from "./utils/FeedbackMessage";
 const Hero = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -76,6 +77,13 @@ const Hero = () => {
   return (
     <>
       <Container sx={{ pt: 10, pb: 15 }}>
+        <center>
+          {" "}
+          <Box sx={{ my: 2 }}>
+            {" "}
+            <FeedbackMessage />
+          </Box>
+        </center>
         <Grid container justifyContent="center">
           <Grid item xs={11} md={8}>
             <motion.div
